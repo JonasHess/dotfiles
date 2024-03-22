@@ -1,0 +1,245 @@
+{
+	"name": "mbosstudio-marketplace-extension",
+	"displayName": "MB.OS Studio Marketplace",
+	"description": "A private marketplace for all extensions of MB.OS Studio",
+	"version": "1.2.0",
+	"publisher": "teamsdk",
+	"icon": "resources/icon.png",
+	"author": {
+		"name": "teamsdk",
+		"email": "f10ce30a.corpdir.onmicrosoft.com@emea.teams.ms"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://git.swf.daimler.com/oak/mb.os-studio/mb.os-studio-marketplace",
+		"directory": "/"
+	},
+	"engines": {
+		"vscode": "^1.66.0"
+	},
+	"categories": [
+		"Other"
+	],
+	"files": [
+		"mbosstudio-marketplace.vsix",
+		"resources/icon.png"
+	],
+	"activationEvents": [
+		"onStartupFinished"
+	],
+	"main": "./out/extension.js",
+	"contributes": {
+		"viewsContainers": {
+			"activitybar": [
+				{
+					"id": "mbosstudio-marketplace",
+					"title": "MB.OS Studio Marketplace",
+					"icon": "resources/extensions.svg"
+				}
+			]
+		},
+		"views": {
+			"mbosstudio-marketplace": [
+				{
+					"id": "mbosstudio-marketplace.extensions",
+					"type": "webview",
+					"name": "MB.OS Studio Extensions"
+				}
+			]
+		},
+		"commands": [
+			{
+				"command": "mbosstudio-marketplace.refresh-extension-list",
+				"title": "Refresh",
+				"icon": "$(extensions-refresh)"
+			},
+			{
+				"command": "mbosstudio-marketplace.filter-installed-extensions",
+				"title": "Installed"
+			},
+			{
+				"command": "mbosstudio-marketplace.filter-notinstalled-extensions",
+				"title": "Not Installed"
+			},
+			{
+				"command": "mbosstudio-marketplace.filter-outdated-extensions",
+				"title": "Updates"
+			},
+			{
+				"command": "mbosstudio-marketplace.login",
+				"title": "MB.OS Studio Marketplace: Login to the Marketplace"
+			},
+			{
+				"command": "mbosstudio-marketplace.logout",
+				"title": "MB.OS Studio Marketplace: Logout from the Marketplace"
+			},
+			{
+				"command": "mbosstudio-marketplace.publish",
+				"title": "MB.OS Studio Marketplace: Publish an extension"
+			},
+			{
+				"command": "mbosstudio-marketplace.clear-cache",
+				"title": "MB.OS Studio Marketplace: Clear the cache"
+			},
+			{
+				"command": "mbosstudio-marketplace.extension-metrics.send",
+				"title": "MB.OS Studio Marketplace: Send installed extension metrics"
+			},
+			{
+				"command": "mbosstudio-marketplace.check-installed-extensions",
+				"title": "MB.OS Studio Marketplace: Check all installed extensions"
+			}
+		],
+		"menus": {
+			"commandPalette": [
+				{
+					"command": "mbosstudio-marketplace.publish",
+					"when": "mbosstudio-marketplace.loggedIn"
+				},
+				{
+					"command": "mbosstudio-marketplace.check-installed-extensions",
+					"when": "mbosstudio-marketplace.loggedIn"
+				}
+			],
+			"view/title": [
+				{
+					"submenu": "mbosstudio-marketplace.filter-extensions-submenu",
+					"when": "view == mbosstudio-marketplace.extensions",
+					"group": "navigation"
+				},
+				{
+					"command": "mbosstudio-marketplace.refresh-extension-list",
+					"when": "view == mbosstudio-marketplace.extensions",
+					"group": "navigation"
+				}
+			],
+			"mbosstudio-marketplace.filter-extensions-submenu": [
+				{
+					"command": "mbosstudio-marketplace.filter-installed-extensions",
+					"group": "1_filter_main@1"
+				},
+				{
+					"command": "mbosstudio-marketplace.filter-notinstalled-extensions",
+					"group": "1_filter_main@2"
+				},
+				{
+					"command": "mbosstudio-marketplace.filter-outdated-extensions",
+					"group": "1_filter_main@3"
+				}
+			]
+		},
+		"configuration": {
+			"properties": {
+				"teamsdk.mbosstudio-marketplace-extension.api.baseurl": {
+					"type": "string",
+					"format": "uri",
+					"default": "https://hljvy7vkn4.execute-api.eu-central-1.amazonaws.com/Live",
+					"description": "Base URL of the Marketplace API"
+				},
+				"teamsdk.mbosstudio-marketplace-extension.api.auth.baseurl": {
+					"type": "string",
+					"format": "uri",
+					"default": "https://hljvy7vkn4.execute-api.eu-central-1.amazonaws.com/Live",
+					"description": "Base URL of the Marketplace API authentication services"
+				},
+				"teamsdk.mbosstudio-marketplace-extension.metrics.opt-out": {
+					"type": "boolean",
+					"default": false,
+					"description": "Disable collection of installed extension metrics"
+				}
+			}
+		},
+		"submenus": [
+			{
+				"id": "mbosstudio-marketplace.filter-extensions-submenu",
+				"label": "Filter Extensions...",
+				"icon": "$(extensions-filter)"
+			}
+		]
+	},
+	"scripts": {
+		"clean": "npx rimraf out && npx rimraf dist && npx rimraf resources/frontend",
+		"compile": "tsc -p ./",
+		"vscode:prepublish": "npm run build",
+		"vscode:prepublishOnly": "npx mkdirp dist && npx vsce package -o dist/mbosstudio-marketplace.vsix --no-dependencies --no-rewrite-relative-links",
+		"generate:api": "npx openapi-typescript ../mbosstudio-marketplace-api/api/api.yaml --output src/common/api.ts",
+		"build:frontend": "npx esbuild --bundle src/frontend/index.tsx --outfile=resources/frontend/frontend.js --minify",
+		"build:extension": "npm run esbuild-base",
+		"build": "npm run generate:api && npm run build:frontend && npm run build:extension",
+		"dev:watch": "npm run esbuild-base -- --sourcemap --watch",
+		"dev:watch:frontend": "esbuild --bundle src/frontend/index.tsx --outfile=resources/frontend/frontend.js --sourcemap",
+		"pretest": "npm run compile && npm run lint",
+		"lint": "npx eslint src --ext ts --ext tsx",
+		"test": "node ./out/test/runTest.js",
+		"test:unit": "npm run compile && xvfb-run -a node './out/test/runUnitSuite.js'",
+		"test:unit:coverage": "c8 --reporter=lcov --reporter=text --exclude 'src/test/**/*' --exclude-after-remap npm run test:unit",
+		"test:integration": "npm run compile && VSCODE_INT_TEST=true xvfb-run -a node 'out/test/integration_suite/runTests.js'",
+		"dist": "npx mkdirp dist && npm run vscode:prepublishOnly",
+		"esbuild-base": "esbuild ./src/extension.ts --bundle --outfile=out/extension.js --external:vscode --format=cjs --platform=node"
+	},
+	"devDependencies": {
+		"@azure/storage-blob": "^12.12.0",
+		"@types/body-parser": "^1.19.2",
+		"@types/chai": "^4.3.4",
+		"@types/chai-as-promised": "^7.1.5",
+		"@types/cookie-parser": "^1.4.3",
+		"@types/express": "^4.17.14",
+		"@types/glob": "^7.2.0",
+		"@types/mocha": "^10.0.1",
+		"@types/mock-fs": "^4.13.1",
+		"@types/node": "16.x",
+		"@types/react": "^18.0.8",
+		"@types/react-dom": "^18.0.3",
+		"@types/semver": "^7.3.9",
+		"@types/vscode": "^1.66.0",
+		"@typescript-eslint/eslint-plugin": "^5.16.0",
+		"@typescript-eslint/parser": "^5.16.0",
+		"@vscode/test-electron": "^2.3.0",
+		"axios-mock-adapter": "^1.21.4",
+		"chai": "^4.3.7",
+		"chai-as-promised": "^7.1.1",
+		"css-loader": "^6.7.1",
+		"eslint": "^8.11.0",
+		"eslint-import-resolver-typescript": "^2.7.1",
+		"eslint-plugin-header": "^3.1.1",
+		"eslint-plugin-import": "^2.26.0",
+		"eslint-plugin-react": "^7.30.0",
+		"fetch-mock": "^9.11.0",
+		"glob": "^7.2.0",
+		"mkdirp": "^1.0.4",
+		"mocha": "^10.2.0",
+		"nock": "^13.3.0",
+		"npm-run-all": "^4.1.5",
+		"rimraf": "^3.0.2",
+		"sinon-chai": "^3.7.0",
+		"style-loader": "^3.3.1",
+		"ts-loader": "^9.2.9",
+		"ts-node": "^10.9.1",
+		"typemoq": "^2.1.0",
+		"typescript": "^4.5.5",
+		"vsce": "^2.10.2"
+	},
+	"dependencies": {
+		"@types/sinon-chai": "^3.2.9",
+		"axios": "^0.27.2",
+		"body-parser": "^1.20.1",
+		"cookie-parser": "^1.4.6",
+		"cross-fetch": "^3.1.5",
+		"express": "^4.18.2",
+		"jsonwebtoken": "^9.0.0",
+		"jszip": "^3.10.1",
+		"mock-fs": "^5.2.0",
+		"react": "^18.1.0",
+		"react-dom": "^18.1.0",
+		"react-markdown": "^8.0.3",
+		"react-simple-star-rating": "^5.1.7",
+		"react-spinners-kit": "^1.9.1",
+		"react-tabs": "^5.1.0",
+		"rehype-highlight": "^5.0.2",
+		"rehype-raw": "^6.1.1",
+		"semver": "^7.3.7"
+	},
+	"__metadata": {
+		"installedTimestamp": 1697444055248
+	}
+}
