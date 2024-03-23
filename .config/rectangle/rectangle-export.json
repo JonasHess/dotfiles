@@ -245,8 +245,16 @@
       "keyCode" : 126,
       "modifierFlags" : 786432
     },
+    "firstTwoThirds" : {
+      "keyCode" : 14,
+      "modifierFlags" : 786432
+    },
     "larger" : {
       "keyCode" : 24,
+      "modifierFlags" : 786432
+    },
+    "lastThird" : {
+      "keyCode" : 5,
       "modifierFlags" : 786432
     },
     "lastTwoThirds" : {
