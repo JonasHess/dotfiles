@@ -83,7 +83,7 @@
 
     },
     "gapSize" : {
-      "float" : 15
+      "float" : 25
     },
     "hideMenubarIcon" : {
       "bool" : false
@@ -241,12 +241,8 @@
       "keyCode" : 3,
       "modifierFlags" : 786432
     },
-    "firstThird" : {
-      "keyCode" : 126,
-      "modifierFlags" : 786432
-    },
     "firstTwoThirds" : {
-      "keyCode" : 14,
+      "keyCode" : 126,
       "modifierFlags" : 786432
     },
     "larger" : {
@@ -254,10 +250,6 @@
       "modifierFlags" : 786432
     },
     "lastThird" : {
-      "keyCode" : 5,
-      "modifierFlags" : 786432
-    },
-    "lastTwoThirds" : {
       "keyCode" : 125,
       "modifierFlags" : 786432
     },

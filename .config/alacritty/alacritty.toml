@@ -11,7 +11,8 @@ family = "JetBrainsMono Nerd Font"
 
 # [window]
 # decorations = "none"
-
+ [window]
+opacity= 0.95
 # [window.padding]
 # x = 7
 # y = 0
