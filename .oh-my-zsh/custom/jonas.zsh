@@ -16,7 +16,6 @@ autoload -Uz compinit
 compinit
 alias lens="open -a OpenLens"
 alias kk="kubectl -n kafka"
-alias vim='nvim'
 alias nmt='kubectl run tmp-nw-tool --rm -i --tty --image registry-emea.app.corpintra.net/dockerhub/praqma/network-multitool -- sh'
 alias cb='pbcopy'
 alias c='clear'
@@ -25,5 +24,16 @@ alias upp='unset HTTPS_PROXY'
 alias get-admin='kubectl -n kafka get secrets admin -o jsonpath="{.data.user\.password}" | base64 -d | pbcopy'
 alias e='nvim'
 #alias e='idea -e --wait'
+
+export WH=/mnt/c/Users/170300012024
+export PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH"
+
+# Merge kubeconfigs
+if [ -d $HOME/.kube/config.d ] && [ $(ls $HOME/.kube/config.d | wc -l) -gt 0 ]; then
+  export KUBECONFIG=$KUBECONFIG$(ls $HOME/.kube/config.d/* | awk -F '/' '{printf ":%s",$0} END {print ""}')
+fi
+
+
+
 
 GLOBALIAS_FILTER_VALUES=(ls grep)

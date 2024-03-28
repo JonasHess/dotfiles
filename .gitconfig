@@ -1,6 +1,6 @@
 [user]
   name = Jonas Hess
-  email = Jonas@Hess.pm
+  email = Jonas.Hess@partner.cgm.com
 [core]
   editor = nvim
   excludesfile = ~/.gitignore
