@@ -34,5 +34,3 @@ GLOBALIAS_FILTER_VALUES=(ls grep)
 if [ -d $HOME/.kube/config.d ] && [ $(ls $HOME/.kube/config.d | wc -l) -gt 0 ]; then
   export KUBECONFIG=$KUBECONFIG$(ls $HOME/.kube/config.d/* | awk -F '/' '{printf ":%s",$0} END {print ""}')
 fi
-
-eval $(/opt/homebrew/bin/brew shellenv)

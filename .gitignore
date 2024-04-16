@@ -1,7 +1,7 @@
 .config/argocd
 .idea
 /.config/github-copilot/
-
+secrets.zsh
 
 
 # General

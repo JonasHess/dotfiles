@@ -2,6 +2,7 @@
 # export ZSH_TMUX_AUTOSTART=true
 # ZSH_ZELLIJ_AUTOSTART=true
 
+eval $(/opt/homebrew/bin/brew shellenv)
 
 # Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
 # Initialization code that may require console input (password prompts, [y/n]
@@ -16,7 +17,7 @@ fi
 # Path to your oh-my-zsh installation.
 export ZSH="$HOME/.oh-my-zsh"
 
-export ZPWR_EXPAND_BLACKLIST=(grep ls)
+export ZPWR_EXPAND_BLACKLIST=(grep ls tmux)
 # Set name of the theme to load --- if set to "random", it will
 # load a random theme each time oh-my-zsh is loaded, in which case,
 # to know which specific one was loaded, run: echo $RANDOM_THEME
@@ -86,7 +87,7 @@ ZSH_THEME="powerlevel10k/powerlevel10k"
 
 # zsh-abbr
 # zellij
-plugins=(tmux globalias iterm2 cp git battery kubectl kubectx kube-ps1 git cp zbell jsontools mvn alias-finder aws dirhistory docker helm zsh-autosuggestions zsh-syntax-highlighting)
+plugins=(terraform tmux globalias iterm2 cp git battery kubectl kubectx kube-ps1 git cp zbell jsontools mvn alias-finder aws dirhistory docker helm zsh-autosuggestions zsh-syntax-highlighting)
 # zstyle :omz:plugins:iterm2 shell-integration yes
 source $ZSH/oh-my-zsh.sh
 
