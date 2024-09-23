@@ -1,7 +1,8 @@
 .config/argocd
 .idea
 /.config/github-copilot/
-
+secrets.zsh
+secret-*
 
 
 # General
@@ -31,3 +32,5 @@ Network Trash Folder
 Temporary Items
 .apdisk
 
+clouds.yaml
+/.config/xnviewmp/
