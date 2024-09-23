@@ -26,6 +26,8 @@ alias upp='unset HTTPS_PROXY'
 alias get-admin='kubectl -n kafka get secrets admin -o jsonpath="{.data.user\.password}" | base64 -d | pbcopy'
 alias e='nvim'
 #alias e='idea -e --wait'
+alias pf='kubectl port-forward svc/argocd-server -n argocd 8081:443'
+alias get-argo-admin='kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d; echo'
 
 GLOBALIAS_FILTER_VALUES=(ls grep)
 
