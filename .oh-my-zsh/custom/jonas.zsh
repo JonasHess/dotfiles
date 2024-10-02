@@ -66,3 +66,12 @@ bindkey ^S history-incremental-search-forward
 
 # Bind SHIRT + CONTROL + "_" to Github Copilot suggest
 bindkey '^_' zsh_gh_copilot_suggest
+
+# Yank to the system clipboard
+function vi-yank-xclip {
+    zle vi-yank
+   echo "$CUTBUFFER" | pbcopy -i
+}
+
+zle -N vi-yank-xclip
+bindkey -M vicmd 'y' vi-yank-xclip
