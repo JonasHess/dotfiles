@@ -29,6 +29,7 @@ alias e='nvim'
 alias pf='kubectl port-forward svc/argocd-server -n argocd 8081:443'
 alias get-argo-admin='kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d; echo'
 
+# Alias not to be expanded
 GLOBALIAS_FILTER_VALUES=(ls grep)
 
 
@@ -60,18 +61,6 @@ export NVM_DIR="$HOME/.nvm"
 # Enable vi mode
 bindkey -v
 
-# Keep History search key bindings
-bindkey ^R history-incremental-search-backward
-bindkey ^S history-incremental-search-forward
+## Bind SHIRT + CONTROL + "_" to Github Copilot suggest (only in command mode)
+zvm_bindkey vicmd '^_' zsh_gh_copilot_suggest
 
-# Bind SHIRT + CONTROL + "_" to Github Copilot suggest
-bindkey '^_' zsh_gh_copilot_suggest
-
-# Yank to the system clipboard
-function vi-yank-xclip {
-    zle vi-yank
-   echo "$CUTBUFFER" | pbcopy -i
-}
-
-zle -N vi-yank-xclip
-bindkey -M vicmd 'y' vi-yank-xclip
