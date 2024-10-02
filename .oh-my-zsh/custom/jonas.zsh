@@ -56,5 +56,13 @@ export NVM_DIR="$HOME/.nvm"
     [ -s "$HOMEBREW_PREFIX/opt/nvm/nvm.sh" ] && \. "$HOMEBREW_PREFIX/opt/nvm/nvm.sh" # This loads nvm
     [ -s "$HOMEBREW_PREFIX/opt/nvm/etc/bash_completion.d/nvm" ] && \. "$HOMEBREW_PREFIX/opt/nvm/etc/bash_completion.d/nvm" # This loads nvm bash_completion
 
+
+# Enable vi mode
+bindkey -v
+
+# Keep History search key bindings
+bindkey ^R history-incremental-search-backward
+bindkey ^S history-incremental-search-forward
+
 # Bind SHIRT + CONTROL + "_" to Github Copilot suggest
 bindkey '^_' zsh_gh_copilot_suggest
