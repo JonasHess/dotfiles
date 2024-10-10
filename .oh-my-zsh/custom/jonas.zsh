@@ -49,7 +49,11 @@ alias publicip='curl ifconfig.me'
 alias localip="ipconfig getifaddr en0"
 alias speedtest='speedtest-cli --simple'
 alias ports='netstat -tulanp'
+alias portscan='nmap -p 1-65535 localhost'
+alias portopen='nc 127.0.0.1 8080 -v'
 alias port-used-by='lsof -i :'
+alias traceg='sudo mtr --show-ips --tcp --port 443 google.de -r'
+
 alias path='echo -e ${PATH//:/\\n}'
 alias path+='export PATH=$PATH:'
 alias flushdns='sudo dscacheutil -flushcache; sudo killall -HUP mDNSResponder'  # macOS DNS flush
@@ -64,6 +68,7 @@ alias editbrew='nvim ~/repos/mac-os-setup/config.yml'
 
 
 
+
 # Alias not to be expanded
 GLOBALIAS_FILTER_VALUES=(ls grep)
 
@@ -74,11 +79,13 @@ if [ -d $HOME/.kube/config.d ] && [ $(ls $HOME/.kube/config.d | wc -l) -gt 0 ]; 
   export KUBECONFIG=$KUBECONFIG$(ls $HOME/.kube/config.d/* | awk -F '/' '{printf ":%s",$0} END {print ""}')
 fi
 
-
+export KUBECONFIG=~/.kube/config:$KUBECONFIG:~/.kube/config
 
 export PATH=$PATH:/Users/jonas/repos/kubectl-plugins
 export PATH=$PATH:$HOME/.rd/bin
+export PATH=$PATH:~/.local/bin
 
+export XDG_CONFIG_HOME=~/.config
 
 # Load Angular CLI autocompletion.
 # source <(ng completion script)
