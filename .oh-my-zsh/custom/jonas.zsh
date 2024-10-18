@@ -51,8 +51,10 @@ alias speedtest='speedtest-cli --simple'
 alias ports='netstat -tulanp'
 alias portscan='nmap -p 1-65535 localhost'
 alias portopen='nc 127.0.0.1 8080 -v'
-alias port-used-by='lsof -i :'
+alias port-used-by='lsof -i :8080'
 alias traceg='sudo mtr --show-ips --tcp --port 443 google.de -r'
+alias set-gateway='sudo ip route add default via 192.168.1.1 dev eth0'
+alias set-ip='sudo ip addr add 192.168.1.100/24 dev eth0'
 
 alias path='echo -e ${PATH//:/\\n}'
 alias path+='export PATH=$PATH:'
@@ -61,12 +63,19 @@ alias pingg='ping google.com'
 alias topcpu='ps -eo pcpu,pid,user,args | sort -k 1 -r | head -10'  # Top 10 CPU consuming processes
 alias topmem='ps -eo pmem,pid,user,args | sort -k 1 -r | head -10'  # Top 10 memory consuming processes
 
+alias iown='sudo chown -R $(id -u):$(id -g) $HOME/file.txt'
+
 alias latest='ls -lt | head -6'
 alias search='apt-cache search'
 alias editzsh='nvim ~/.oh-my-zsh/custom/jonas.zsh'
 alias editbrew='nvim ~/repos/mac-os-setup/config.yml'
+alias distro='cat /etc/*-release'
 
+alias compress='tar -czvf example.tar.gz /path/to/directory'
+alias decompress='tar -xzvf example.tar.gz'
+alias inspect-cert='openssl x509 -in my_file.crt -text -noout'
 
+gh extension list | grep -q "gh[- ]copilot" || _echo_exit " Install the GitHub Copilot extension for github cli: > gh extension install github/gh-copilot"
 
 
 # Alias not to be expanded

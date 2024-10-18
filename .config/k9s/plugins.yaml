@@ -1,0 +1,33 @@
+plugins:
+  exec-cluster:
+    shortCut: Ctrl-X
+    description: "K9s to cluster"
+    scopes:
+      - kubernetesclusters
+      - xkubernetesclusters
+    command: bash
+    background: false
+    args:
+      - -c
+      - "mscc k8s $NAME; k9s --kubeconfig /tmp/kubeconfig"
+  test-cluster:
+    shortCut: Ctrl-T
+    description: "Test cluster with MSCC-CLI"
+    scopes:
+      - kubernetesclusters
+      - xkubernetesclusters
+    command: bash
+    background: false
+    args:
+      - -c
+      - "mscc k8s $NAME -t; read -p 'Press enter to continue'"
+  beta-trace:
+    shortCut: Ctrl-B
+    description: "Beta Trace"
+    scopes:
+      - xkubernetesclusters
+    command: bash
+    background: false
+    args:
+      - -c
+      - "crossplane beta trace XKubernetesCluster -n $NAMESPACE $NAME; read -p 'Press enter to continue'"
