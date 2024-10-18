@@ -112,9 +112,9 @@ export NVM_DIR="$HOME/.nvm"
     [ -s "$HOMEBREW_PREFIX/opt/nvm/etc/bash_completion.d/nvm" ] && \. "$HOMEBREW_PREFIX/opt/nvm/etc/bash_completion.d/nvm" # This loads nvm bash_completion
 
 
-# Enable vi mode
-bindkey -v
+## Enable vi mode
+#bindkey -v
 
-## Bind SHIRT + CONTROL + "_" to Github Copilot suggest (only in command mode)
-zvm_bindkey vicmd '^_' zsh_gh_copilot_suggest
+### Bind SHIRT + CONTROL + "_" to Github Copilot suggest (only in command mode)
+#zvm_bindkey vicmd '^_' zsh_gh_copilot_suggest
 
