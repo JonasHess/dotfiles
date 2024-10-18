@@ -77,6 +77,9 @@ alias inspect-cert='openssl x509 -in my_file.crt -text -noout'
 
 gh extension list | grep -q "gh[- ]copilot" || _echo_exit " Install the GitHub Copilot extension for github cli: > gh extension install github/gh-copilot"
 
+# ip route show default
+alias gateway='ip route show default'
+# netstat -netstat -anp | grep etcd
 
 # Alias not to be expanded
 GLOBALIAS_FILTER_VALUES=(ls grep)
