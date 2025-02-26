@@ -89,7 +89,7 @@ alias terraform='tofu'
 # zsh-abbr
 # zellij terraform tmux globalias iterm2 cp git battery kubectl kubectx kube-ps1 git cp zbell jsontools mvn alias-finder aws dirhistory docker helm zsh-autosuggestions zsh-syntax-highlighting)
 # zsh-vi-mode
-plugins=(copypath zsh-github-copilot terraform tmux globalias iterm2 git kubectl kubectx kube-ps1 zbell alias-finder helm zsh-autosuggestions zsh-syntax-highlighting)
+plugins=(copypath terraform globalias iterm2 git kubectl kubectx kube-ps1 alias-finder helm zsh-autosuggestions zsh-syntax-highlighting)
 # zstyle :omz:plugins:iterm2 shell-integration yes
 source $ZSH/oh-my-zsh.sh
 
