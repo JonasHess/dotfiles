@@ -1,7 +1,7 @@
 plugins:
   exec-cluster:
     shortCut: Ctrl-X
-    description: "K9s to cluster"
+    description: "Connect to cluster with MSCC"
     scopes:
       - kubernetesclusters
       - xkubernetesclusters
@@ -9,7 +9,21 @@ plugins:
     background: false
     args:
       - -c
-      - "mscc k8s $NAME; k9s --kubeconfig /tmp/kubeconfig"
+      - |
+        # Connect to a specific cluster and launch K9s with its configuration
+        set -euo pipefail
+        
+        echo "📡 Connecting to cluster: $NAME..."
+        if ! mscc k8s "$NAME"; then
+          echo "❌ Failed to connect to cluster"
+          echo "Press enter to continue"
+          read
+          exit 1
+        fi
+        
+        echo "✅ Connection successful, launching K9s"
+        k9s --kubeconfig /tmp/kubeconfig
+  
   test-cluster:
     shortCut: Ctrl-T
     description: "Test cluster with MSCC-CLI"
@@ -20,20 +34,121 @@ plugins:
     background: false
     args:
       - -c
-      - "set -x; mscc k8s $NAME -t; echo 'Press enter to continue'; read"
-  beta-trace:
+      - |
+        # Run test operations on the selected cluster
+        set -euo pipefail
+        
+        echo "🧪 Testing cluster: $NAME..."
+        if ! mscc k8s "$NAME" -t; then
+          echo "❌ Test failed"
+        else
+          echo "✅ Test completed successfully"
+        fi
+        
+        echo "Press enter to continue"
+        read
+  
+
+  resource-trace:
     shortCut: Ctrl-B
-    description: "Beta Trace"
+    description: "Trace Crossplane resource dependencies"
     scopes:
-      - xkubernetesclusters
+      - all
     command: zsh
     background: false
     args:
       - -c
-      - "set -x; crossplane beta trace XKubernetesCluster -n $NAMESPACE $NAME; echo 'Press enter to continue'; read"
-  cnpg-backup:
+      - |
+        # Trace dependencies for any Crossplane-managed resource
+        set -euo pipefail
+        
+        echo "🔍 Analyzing resource: $NAME in namespace: $NAMESPACE"
+        
+        # Dynamically determine resource kind
+        if ! kind=$(kubectl get "$RESOURCE_NAME" -n "$NAMESPACE" "$NAME" -o=jsonpath='{.kind}' 2>/dev/null); then
+          echo "❌ Failed to determine resource kind - is this a valid resource?"
+          echo "Press enter to continue"
+          read
+          exit 1
+        fi
+        
+        echo "📊 Resource kind: $kind - Running dependency trace"
+        
+        # Run crossplane trace with proper error handling
+        if ! crossplane beta trace "$kind" -n "$NAMESPACE" "$NAME"; then
+          echo "❌ Trace failed - is this a Crossplane-managed resource?"
+        else
+          echo "✅ Trace completed"
+        fi
+        
+        echo "Press enter to continue"
+        read
+  
+  pg-status:
+    shortCut: s
+    description: "Show database status"
+    scopes:
+      - cluster
+    command: zsh
+    background: false
+    args:
+      - -c
+      - |
+        # Display database cluster status
+        set -euo pipefail
+        echo "📊 Retrieving status for $NAME in namespace $NAMESPACE"
+        kubectl cnpg status "$NAME" -n "$NAMESPACE" --context "$CONTEXT" |& less -R
+  
+  pg-status-verbose:
+    shortCut: Shift-S
+    description: "Show detailed database status"
+    scopes:
+      - cluster
+    command: zsh
+    background: false
+    args:
+      - -c
+      - |
+        # Display detailed database cluster status
+        set -euo pipefail
+        echo "🔍 Retrieving detailed status for $NAME in namespace $NAMESPACE"
+        kubectl cnpg status "$NAME" -n "$NAMESPACE" --context "$CONTEXT" --verbose |& less -R
+  
+  pg-logs:
+    shortCut: l
+    description: "View database logs"
+    scopes:
+      - cluster
+    command: zsh
+    background: false
+    args:
+      - -c
+      - |
+        # Stream logs from the database cluster
+        set -euo pipefail
+        echo "📜 Streaming logs for $NAME in namespace $NAMESPACE"
+        kubectl cnpg logs cluster "$NAME" -f -n "$NAMESPACE" --context "$CONTEXT"
+  
+  pg-shell:
+    shortCut: p
+    description: "Open PostgreSQL shell"
+    scopes:
+      - cluster
+    command: zsh
+    background: false
+    args:
+      - -c
+      - |
+        # Open an interactive PSQL shell to the database
+        set -euo pipefail
+        echo "🐘 Opening PostgreSQL shell for $NAME in namespace $NAMESPACE"
+        kubectl cnpg psql "$NAME" -n "$NAMESPACE" --context "$CONTEXT"
+  
+  # --- Database Maintenance Operations ---
+  
+  pg-backup:
     shortCut: b
-    description: Backup
+    description: "Create database backup"
     scopes:
       - cluster
     command: zsh
@@ -41,20 +156,64 @@ plugins:
     background: false
     args:
       - -c
-      - "kubectl cnpg backup $NAME -n $NAMESPACE --context \"$CONTEXT\" |& less -R"
-  cnpg-hibernate-status:
+      - |
+        # Create a backup of the database cluster
+        set -euo pipefail
+        echo "💾 Creating backup for $NAME in namespace $NAMESPACE"
+        kubectl cnpg backup "$NAME" -n "$NAMESPACE" --context "$CONTEXT" |& less -R
+  
+  pg-reload:
+    shortCut: r
+    description: "Reload database configuration"
+    confirm: true
+    scopes:
+      - cluster
+    command: zsh
+    background: false
+    args:
+      - -c
+      - |
+        # Reload database configuration without restart
+        set -euo pipefail
+        echo "🔄 Reloading configuration for $NAME in namespace $NAMESPACE"
+        kubectl cnpg reload "$NAME" -n "$NAMESPACE" --context "$CONTEXT" |& less -R
+  
+  pg-restart:
+    shortCut: Shift-R
+    description: "Restart database cluster"
+    confirm: true
+    scopes:
+      - cluster
+    command: zsh
+    background: false
+    args:
+      - -c
+      - |
+        # Restart the database cluster
+        set -euo pipefail
+        echo "🔄 Restarting cluster $NAME in namespace $NAMESPACE"
+        kubectl cnpg restart "$NAME" -n "$NAMESPACE" --context "$CONTEXT" |& less -R
+  
+  # --- Hibernation Controls ---
+  
+  pg-hibernate-status:
     shortCut: h
-    description: Hibernate status
+    description: "Check database hibernate status"
     scopes:
       - cluster
     command: zsh
     background: false
     args:
       - -c
-      - "kubectl cnpg hibernate status $NAME -n $NAMESPACE --context \"$CONTEXT\" |& less -R"
-  cnpg-hibernate:
+      - |
+        # Check hibernate status of database cluster
+        set -euo pipefail
+        echo "💤 Checking hibernation status for $NAME in namespace $NAMESPACE"
+        kubectl cnpg hibernate status "$NAME" -n "$NAMESPACE" --context "$CONTEXT" |& less -R
+  
+  pg-hibernate:
     shortCut: Shift-H
-    description: Hibernate
+    description: "Hibernate database cluster"
     confirm: true
     scopes:
       - cluster
@@ -62,10 +221,15 @@ plugins:
     background: false
     args:
       - -c
-      - "kubectl cnpg hibernate on $NAME -n $NAMESPACE --context \"$CONTEXT\" |& less -R"
-  cnpg-hibernate-off:
-    shortCut: Shift-H
-    description: Wake up hibernated cluster in this namespace
+      - |
+        # Put database cluster into hibernation
+        set -euo pipefail
+        echo "💤 Hibernating cluster $NAME in namespace $NAMESPACE"
+        kubectl cnpg hibernate on "$NAME" -n "$NAMESPACE" --context "$CONTEXT" |& less -R
+  
+  pg-hibernate-off:
+    shortCut: Shift-W
+    description: "Wake up hibernated cluster"
     confirm: true
     scopes:
       - namespace
@@ -73,66 +237,8 @@ plugins:
     background: false
     args:
       - -c
-      - "kubectl cnpg hibernate off $NAME -n $NAME --context \"$CONTEXT\" |& less -R"
-  cnpg-logs:
-    shortCut: l
-    description: Logs
-    scopes:
-      - cluster
-    command: zsh
-    background: false
-    args:
-      - -c
-      - "kubectl cnpg logs cluster $NAME -f -n $NAMESPACE --context $CONTEXT"
-  cnpg-psql:
-    shortCut: p
-    description: PSQL shell
-    scopes:
-      - cluster
-    command: zsh
-    background: false
-    args:
-      - -c
-      - "kubectl cnpg psql $NAME -n $NAMESPACE --context $CONTEXT"
-  cnpg-reload:
-    shortCut: r
-    description: Reload
-    confirm: true
-    scopes:
-      - cluster
-    command: zsh
-    background: false
-    args:
-      - -c
-      - "kubectl cnpg reload $NAME -n $NAMESPACE --context \"$CONTEXT\" |& less -R"
-  cnpg-restart:
-    shortCut: Shift-R
-    description: Restart
-    confirm: true
-    scopes:
-      - cluster
-    command: zsh
-    background: false
-    args:
-      - -c
-      - "kubectl cnpg restart $NAME -n $NAMESPACE --context \"$CONTEXT\" |& less -R"
-  cnpg-status:
-    shortCut: s
-    description: Status
-    scopes:
-      - cluster
-    command: zsh
-    background: false
-    args:
-      - -c
-      - "kubectl cnpg status $NAME -n $NAMESPACE --context \"$CONTEXT\" |& less -R"
-  cnpg-status-verbose:
-    shortCut: Shift-S
-    description: Status (verbose)
-    scopes:
-      - cluster
-    command: zsh
-    background: false
-    args:
-      - -c
-      - "kubectl cnpg status $NAME -n $NAMESPACE --context \"$CONTEXT\" --verbose |& less -R"
+      - |
+        # Wake up a hibernated database cluster
+        set -euo pipefail
+        echo "⏰ Waking up hibernated clusters in namespace $NAME"
+        kubectl cnpg hibernate off "$NAME" -n "$NAME" --context "$CONTEXT" |& less -R
