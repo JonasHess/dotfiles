@@ -20,7 +20,7 @@ plugins:
     background: false
     args:
       - -c
-      - "mscc k8s $NAME -t; echo 'Press enter to continue'; read"
+      - "set -x; mscc k8s $NAME -t; echo 'Press enter to continue'; read"
   beta-trace:
     shortCut: Ctrl-B
     description: "Beta Trace"
@@ -30,7 +30,7 @@ plugins:
     background: false
     args:
       - -c
-      - "crossplane beta trace XKubernetesCluster -n $NAMESPACE $NAME; echo 'Press enter to continue'; read'"
+      - "set -x; crossplane beta trace XKubernetesCluster -n $NAMESPACE $NAME; echo 'Press enter to continue'; read"
   cnpg-backup:
     shortCut: b
     description: Backup
