@@ -48,7 +48,6 @@ plugins:
         echo "Press enter to continue"
         read
   
-
   resource-trace:
     shortCut: Ctrl-B
     description: "Trace Crossplane resource dependencies"
@@ -83,7 +82,55 @@ plugins:
         
         echo "Press enter to continue"
         read
-  
+
+  watch-events:
+    shortCut: Shift-E
+    description: "Watch resource events in real-time"
+    scopes:
+      - all
+    command: zsh
+    background: false
+    args:
+      - -c
+      - |
+        # Stream Kubernetes events for the selected resource
+        set -euo pipefail
+        
+        echo "👁️ Watching events for $RESOURCE_NAME/$NAME in namespace $NAMESPACE"
+        echo "⌨️ Press Ctrl+C to exit"
+        
+        # Use kubectl events command with proper error handling
+        if ! kubectl events --context "$CONTEXT" --namespace "$NAMESPACE" \
+           --for "$RESOURCE_NAME.$RESOURCE_GROUP/$NAME" --watch; then
+          echo "❌ Failed to watch events - check resource name and permissions"
+          echo "Press enter to continue"
+          read
+          exit 1
+        fi
+
+  argocd-sync:
+    shortCut: s
+    description: "Sync ArgoCD Application"
+    scopes:
+      - application
+    command: zsh
+    background: true
+    confirm: true
+    args:
+      - -c
+      - |
+        # Synchronize an ArgoCD application
+        set -euo pipefail
+        
+        echo "🔄 Starting sync for ArgoCD application: $NAME in namespace: $NAMESPACE"
+        
+        if ! argocd app sync "$NAME" --app-namespace "$NAMESPACE"; then
+          # We don't show this error since the command runs in background
+          # but we'll log it to the background process
+          echo "❌ Sync failed for application: $NAME" >&2
+          exit 1
+        fi
+
   pg-status:
     shortCut: s
     description: "Show database status"
@@ -98,7 +145,7 @@ plugins:
         set -euo pipefail
         echo "📊 Retrieving status for $NAME in namespace $NAMESPACE"
         kubectl cnpg status "$NAME" -n "$NAMESPACE" --context "$CONTEXT" |& less -R
-  
+
   pg-status-verbose:
     shortCut: Shift-S
     description: "Show detailed database status"
@@ -113,7 +160,7 @@ plugins:
         set -euo pipefail
         echo "🔍 Retrieving detailed status for $NAME in namespace $NAMESPACE"
         kubectl cnpg status "$NAME" -n "$NAMESPACE" --context "$CONTEXT" --verbose |& less -R
-  
+
   pg-logs:
     shortCut: l
     description: "View database logs"
@@ -128,7 +175,7 @@ plugins:
         set -euo pipefail
         echo "📜 Streaming logs for $NAME in namespace $NAMESPACE"
         kubectl cnpg logs cluster "$NAME" -f -n "$NAMESPACE" --context "$CONTEXT"
-  
+
   pg-shell:
     shortCut: p
     description: "Open PostgreSQL shell"
@@ -143,9 +190,9 @@ plugins:
         set -euo pipefail
         echo "🐘 Opening PostgreSQL shell for $NAME in namespace $NAMESPACE"
         kubectl cnpg psql "$NAME" -n "$NAMESPACE" --context "$CONTEXT"
-  
+
   # --- Database Maintenance Operations ---
-  
+
   pg-backup:
     shortCut: b
     description: "Create database backup"
@@ -161,7 +208,7 @@ plugins:
         set -euo pipefail
         echo "💾 Creating backup for $NAME in namespace $NAMESPACE"
         kubectl cnpg backup "$NAME" -n "$NAMESPACE" --context "$CONTEXT" |& less -R
-  
+
   pg-reload:
     shortCut: r
     description: "Reload database configuration"
@@ -177,7 +224,7 @@ plugins:
         set -euo pipefail
         echo "🔄 Reloading configuration for $NAME in namespace $NAMESPACE"
         kubectl cnpg reload "$NAME" -n "$NAMESPACE" --context "$CONTEXT" |& less -R
-  
+
   pg-restart:
     shortCut: Shift-R
     description: "Restart database cluster"
@@ -193,9 +240,9 @@ plugins:
         set -euo pipefail
         echo "🔄 Restarting cluster $NAME in namespace $NAMESPACE"
         kubectl cnpg restart "$NAME" -n "$NAMESPACE" --context "$CONTEXT" |& less -R
-  
+
   # --- Hibernation Controls ---
-  
+
   pg-hibernate-status:
     shortCut: h
     description: "Check database hibernate status"
@@ -210,7 +257,7 @@ plugins:
         set -euo pipefail
         echo "💤 Checking hibernation status for $NAME in namespace $NAMESPACE"
         kubectl cnpg hibernate status "$NAME" -n "$NAMESPACE" --context "$CONTEXT" |& less -R
-  
+
   pg-hibernate:
     shortCut: Shift-H
     description: "Hibernate database cluster"
@@ -226,7 +273,7 @@ plugins:
         set -euo pipefail
         echo "💤 Hibernating cluster $NAME in namespace $NAMESPACE"
         kubectl cnpg hibernate on "$NAME" -n "$NAMESPACE" --context "$CONTEXT" |& less -R
-  
+
   pg-hibernate-off:
     shortCut: Shift-W
     description: "Wake up hibernated cluster"
