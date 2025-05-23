@@ -1,7 +1,7 @@
 plugins:
   copy-yaml:
     shortCut: Ctrl-Y
-    description: "Copy resource YAML definition to clipboard"
+    description: "copy yaml"
     scopes:
       - all
     command: zsh
@@ -49,7 +49,7 @@ plugins:
         read
   exec-cluster:
     shortCut: Ctrl-X
-    description: "Connect to cluster with MSCC"
+    description: "connect to cluster"
     scopes:
       - kubernetesclusters
       - xkubernetesclusters
@@ -74,7 +74,7 @@ plugins:
   
   test-cluster:
     shortCut: Ctrl-T
-    description: "Test cluster with MSCC-CLI"
+    description: "test cluster"
     scopes:
       - kubernetesclusters
       - xkubernetesclusters
@@ -98,7 +98,7 @@ plugins:
   
   resource-trace:
     shortCut: Ctrl-B
-    description: "Trace Crossplane resource dependencies"
+    description: "beta trace"
     scopes:
       - all
     command: zsh
@@ -133,7 +133,7 @@ plugins:
 
   watch-events:
     shortCut: Shift-E
-    description: "Watch resource events in real-time"
+    description: "watch events"
     scopes:
       - all
     command: zsh
@@ -158,7 +158,7 @@ plugins:
 
   argocd-sync:
     shortCut: s
-    description: "Sync ArgoCD Application"
+    description: "sync ArgoCD Application"
     scopes:
       - application
     command: zsh
@@ -181,7 +181,7 @@ plugins:
 
   pg-status:
     shortCut: s
-    description: "Show database status"
+    description: "cnpg status"
     scopes:
       - cluster
     command: zsh
@@ -196,7 +196,7 @@ plugins:
 
   pg-status-verbose:
     shortCut: Shift-S
-    description: "Show detailed database status"
+    description: "cnpg status -v"
     scopes:
       - cluster
     command: zsh
@@ -211,7 +211,7 @@ plugins:
 
   pg-logs:
     shortCut: l
-    description: "View database logs"
+    description: "cnpg logs"
     scopes:
       - cluster
     command: zsh
@@ -226,7 +226,7 @@ plugins:
 
   pg-shell:
     shortCut: p
-    description: "Open PostgreSQL shell"
+    description: "cnpg psql"
     scopes:
       - cluster
     command: zsh
@@ -243,7 +243,7 @@ plugins:
 
   pg-backup:
     shortCut: b
-    description: "Create database backup"
+    description: "cnpg backup"
     scopes:
       - cluster
     command: zsh
@@ -259,7 +259,7 @@ plugins:
 
   pg-reload:
     shortCut: r
-    description: "Reload database configuration"
+    description: "cnpg reload"
     confirm: true
     scopes:
       - cluster
@@ -275,7 +275,7 @@ plugins:
 
   pg-restart:
     shortCut: Shift-R
-    description: "Restart database cluster"
+    description: "cnpg restart"
     confirm: true
     scopes:
       - cluster
@@ -293,7 +293,7 @@ plugins:
 
   pg-hibernate-status:
     shortCut: h
-    description: "Check database hibernate status"
+    description: "cnpg hibernate status"
     scopes:
       - cluster
     command: zsh
@@ -308,7 +308,7 @@ plugins:
 
   pg-hibernate:
     shortCut: Shift-H
-    description: "Hibernate database cluster"
+    description: "cnpg hibernate on"
     confirm: true
     scopes:
       - cluster
@@ -324,7 +324,7 @@ plugins:
 
   pg-hibernate-off:
     shortCut: Shift-W
-    description: "Wake up hibernated cluster"
+    description: "cnpg hibernate off"
     confirm: true
     scopes:
       - namespace
@@ -340,7 +340,7 @@ plugins:
 
   download-kubeconfig:
     shortCut: Ctrl-J
-    description: "Download kubeConfig to ~/.kube/config.d/"
+    description: "download kubeConfig"
     scopes:
       - xkubernetesclusters
     command: zsh

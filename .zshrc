@@ -85,7 +85,6 @@ ZSH_THEME="powerlevel10k/powerlevel10k"
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
 
-alias terraform='tofu'
 # zsh-abbr
 # zellij terraform tmux globalias iterm2 cp git battery kubectl kubectx kube-ps1 git cp zbell jsontools mvn alias-finder aws dirhistory docker helm zsh-autosuggestions zsh-syntax-highlighting)
 # zsh-vi-mode
