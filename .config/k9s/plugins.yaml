@@ -36,8 +36,15 @@ plugins:
           CLIPBOARD_CMD="cat"
         fi
         
+        # Ensure we use the exact resource type from K9s
+        resource_spec="$RESOURCE_NAME"
+        if [[ "$RESOURCE_NAME" != *"."* ]] && [[ -n "$RESOURCE_GROUP" ]]; then
+          # If RESOURCE_NAME is just the plural name, use the full specification
+          resource_spec="${RESOURCE_NAME}.${RESOURCE_GROUP}"
+        fi
+        
         # Get the resource YAML definition and copy to clipboard
-        if ! kubectl get "$RESOURCE_NAME" -n "$NAMESPACE" "$NAME" -o yaml --context "$CONTEXT" | tee >(eval "$CLIPBOARD_CMD"); then
+        if ! kubectl get "$resource_spec" -n "$NAMESPACE" "$NAME" -o yaml --context "$CONTEXT" | tee >(eval "$CLIPBOARD_CMD"); then
           echo "❌ Failed to get resource YAML - check resource name and permissions"
           echo "Press enter to continue"
           read
@@ -110,19 +117,55 @@ plugins:
         set -euo pipefail
         
         echo "🔍 Analyzing resource: $NAME in namespace: $NAMESPACE"
+        echo "🔧 Using resource type: $RESOURCE_NAME"
+        echo "🔧 Resource group: $RESOURCE_GROUP"
         
-        # Dynamically determine resource kind
-        if ! kind=$(kubectl get "$RESOURCE_NAME" -n "$NAMESPACE" "$NAME" -o=jsonpath='{.kind}' 2>/dev/null); then
+        # Use the exact resource specification from K9s
+        # RESOURCE_NAME should be the full CRD name (e.g., xtenants.pgsql.ms.infinity.cgm.ag)
+        # RESOURCE_GROUP should be the API group (e.g., pgsql.ms.infinity.cgm.ag)
+        
+        # Get the kind from the resource using the exact RESOURCE_NAME
+        if ! kind=$(kubectl get "$RESOURCE_NAME" -n "$NAMESPACE" "$NAME" -o=jsonpath='{.kind}' --context "$CONTEXT" 2>/dev/null); then
           echo "❌ Failed to determine resource kind - is this a valid resource?"
           echo "Press enter to continue"
           read
           exit 1
         fi
         
-        echo "📊 Resource kind: $kind - Running dependency trace"
+        # Get the CRD to find the correct version
+        crd_name="$RESOURCE_NAME"
+        if [[ "$RESOURCE_NAME" != *"."* ]] && [[ -n "$RESOURCE_GROUP" ]]; then
+          # If RESOURCE_NAME is just the plural name, construct the full CRD name
+          crd_name="${RESOURCE_NAME}.${RESOURCE_GROUP}"
+        fi
         
-        # Run crossplane trace with proper error handling
-        if ! watch crossplane beta trace "$kind" -n "$NAMESPACE" "$NAME"; then
+        echo "🔧 Looking up CRD: $crd_name"
+        
+        # Get the storage version from the CRD
+        if ! version=$(kubectl get crd "$crd_name" -o=jsonpath='{.spec.versions[?(@.storage==true)].name}' --context "$CONTEXT" 2>/dev/null); then
+          echo "❌ Failed to get version from CRD $crd_name"
+          # Fallback: try to get any version
+          if ! version=$(kubectl get crd "$crd_name" -o=jsonpath='{.spec.versions[0].name}' --context "$CONTEXT" 2>/dev/null); then
+            echo "❌ Failed to determine version for CRD $crd_name"
+            echo "Press enter to continue"
+            read
+            exit 1
+          fi
+        fi
+        
+        # Extract group from CRD name (everything after the first dot)
+        if [[ "$crd_name" == *"."* ]]; then
+          group="${crd_name#*.}"
+          crossplane_format="$kind.$version.$group"
+        else
+          # Core resource
+          crossplane_format="$kind.$version"
+        fi
+        
+        echo "📊 Resource: $crossplane_format - Running dependency trace"
+        
+        # Run crossplane trace with proper format
+        if ! watch crossplane beta trace "$crossplane_format/$NAME" -n "$NAMESPACE"; then
           echo "❌ Trace failed - is this a Crossplane-managed resource?"
         else
           echo "✅ Trace completed"

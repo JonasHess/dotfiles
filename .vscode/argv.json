@@ -8,5 +8,13 @@
 {
 	// Use software rendering instead of hardware accelerated rendering.
 	// This can help in cases where you see rendering issues in VS Code.
-	// "disable-hardware-acceleration": true
+	// "disable-hardware-acceleration": true,
+
+	// Allows to disable crash reporting.
+	// Should restart the app if the value is changed.
+	"enable-crash-reporter": true,
+
+	// Unique id used for correlating crash reports sent from this instance.
+	// Do not edit this value.
+	"crash-reporter-id": "0865fed3-0d2d-455b-821a-35a2e8e50501"
 }
