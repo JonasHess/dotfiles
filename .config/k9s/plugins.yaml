@@ -44,7 +44,7 @@ plugins:
         fi
         
         # Get the resource YAML definition and copy to clipboard
-        if ! kubectl get "$resource_spec" -n "$NAMESPACE" "$NAME" -o yaml --context "$CONTEXT" | tee >(eval "$CLIPBOARD_CMD"); then
+        if ! kubectl get "$resource_spec" -n "$NAMESPACE" "$NAME" -o yaml --kubeconfig "$KUBECONFIG" --context "$CONTEXT" | tee >(eval "$CLIPBOARD_CMD"); then
           echo "❌ Failed to get resource YAML - check resource name and permissions"
           echo "Press enter to continue"
           read
@@ -125,7 +125,7 @@ plugins:
         # RESOURCE_GROUP should be the API group (e.g., pgsql.ms.infinity.cgm.ag)
         
         # Get the kind from the resource using the exact RESOURCE_NAME
-        if ! kind=$(kubectl get "$RESOURCE_NAME" -n "$NAMESPACE" "$NAME" -o=jsonpath='{.kind}' --context "$CONTEXT" 2>/dev/null); then
+        if ! kind=$(kubectl get "$RESOURCE_NAME" -n "$NAMESPACE" "$NAME" -o=jsonpath='{.kind}' --kubeconfig "$KUBECONFIG" --context "$CONTEXT" 2>/dev/null); then
           echo "❌ Failed to determine resource kind - is this a valid resource?"
           echo "Press enter to continue"
           read
@@ -142,10 +142,10 @@ plugins:
         echo "🔧 Looking up CRD: $crd_name"
         
         # Get the storage version from the CRD
-        if ! version=$(kubectl get crd "$crd_name" -o=jsonpath='{.spec.versions[?(@.storage==true)].name}' --context "$CONTEXT" 2>/dev/null); then
+        if ! version=$(kubectl get crd "$crd_name" -o=jsonpath='{.spec.versions[?(@.storage==true)].name}' --kubeconfig "$KUBECONFIG" --context "$CONTEXT" 2>/dev/null); then
           echo "❌ Failed to get version from CRD $crd_name"
           # Fallback: try to get any version
-          if ! version=$(kubectl get crd "$crd_name" -o=jsonpath='{.spec.versions[0].name}' --context "$CONTEXT" 2>/dev/null); then
+          if ! version=$(kubectl get crd "$crd_name" -o=jsonpath='{.spec.versions[0].name}' --kubeconfig "$KUBECONFIG" --context "$CONTEXT" 2>/dev/null); then
             echo "❌ Failed to determine version for CRD $crd_name"
             echo "Press enter to continue"
             read
@@ -191,7 +191,7 @@ plugins:
         echo "⌨️ Press Ctrl+C to exit"
         
         # Use kubectl events command with proper error handling
-        if ! kubectl events --context "$CONTEXT" --namespace "$NAMESPACE" \
+        if ! kubectl events --kubeconfig "$KUBECONFIG" --context "$CONTEXT" --namespace "$NAMESPACE" \
            --for "$RESOURCE_NAME.$RESOURCE_GROUP/$NAME" --watch; then
           echo "❌ Failed to watch events - check resource name and permissions"
           echo "Press enter to continue"
@@ -215,7 +215,7 @@ plugins:
         
         echo "🔄 Starting sync for ArgoCD application: $NAME in namespace: $NAMESPACE"
         
-        if ! argocd app sync "$NAME" --app-namespace "$NAMESPACE"; then
+        if ! argocd app sync "$NAME" --app-namespace "$NAMESPACE" --kubeconfig "$KUBECONFIG" --kube-context "$CONTEXT"; then
           # We don't show this error since the command runs in background
           # but we'll log it to the background process
           echo "❌ Sync failed for application: $NAME" >&2
@@ -235,7 +235,7 @@ plugins:
         # Display database cluster status
         set -euo pipefail
         echo "📊 Retrieving status for $NAME in namespace $NAMESPACE"
-        kubectl cnpg status "$NAME" -n "$NAMESPACE" --context "$CONTEXT" |& less -R
+        kubectl cnpg status "$NAME" -n "$NAMESPACE" --kubeconfig "$KUBECONFIG" --context "$CONTEXT" |& less -R
 
   pg-status-verbose:
     shortCut: Shift-S
@@ -250,7 +250,7 @@ plugins:
         # Display detailed database cluster status
         set -euo pipefail
         echo "🔍 Retrieving detailed status for $NAME in namespace $NAMESPACE"
-        kubectl cnpg status "$NAME" -n "$NAMESPACE" --context "$CONTEXT" --verbose |& less -R
+        kubectl cnpg status "$NAME" -n "$NAMESPACE" --kubeconfig "$KUBECONFIG" --context "$CONTEXT" --verbose |& less -R
 
   pg-logs:
     shortCut: l
@@ -265,7 +265,7 @@ plugins:
         # Stream pretty printed logs from the database cluster
         set -euo pipefail
         echo "📊 Streaming pretty printed logs for $NAME in namespace $NAMESPACE"
-        kubectl cnpg logs cluster "$NAME" -f -n "$NAMESPACE" --context "$CONTEXT" | kubectl cnpg logs pretty
+        kubectl cnpg logs cluster "$NAME" -f -n "$NAMESPACE" --kubeconfig "$KUBECONFIG" --context "$CONTEXT" | kubectl cnpg logs pretty
 
   pg-logs-raw:
     shortCut: Shift-L
@@ -280,7 +280,7 @@ plugins:
         # Stream raw logs from the database cluster
         set -euo pipefail
         echo "📜 Streaming raw logs for $NAME in namespace $NAMESPACE"
-        kubectl cnpg logs cluster "$NAME" -f -n "$NAMESPACE" --context "$CONTEXT"
+        kubectl cnpg logs cluster "$NAME" -f -n "$NAMESPACE" --kubeconfig "$KUBECONFIG" --context "$CONTEXT"
 
   pg-shell:
     shortCut: p
@@ -295,7 +295,7 @@ plugins:
         # Open an interactive PSQL shell to the database
         set -euo pipefail
         echo "🐘 Opening PostgreSQL shell for $NAME in namespace $NAMESPACE"
-        kubectl cnpg psql "$NAME" -n "$NAMESPACE" --context "$CONTEXT"
+        kubectl cnpg psql "$NAME" -n "$NAMESPACE" --kubeconfig "$KUBECONFIG" --context "$CONTEXT"
 
   # --- Database Maintenance Operations ---
 
@@ -313,7 +313,7 @@ plugins:
         # Create a backup of the database cluster
         set -euo pipefail
         echo "💾 Creating backup for $NAME in namespace $NAMESPACE"
-        kubectl cnpg backup "$NAME" -n "$NAMESPACE" --context "$CONTEXT" |& less -R
+        kubectl cnpg backup "$NAME" -n "$NAMESPACE" --kubeconfig "$KUBECONFIG" --context "$CONTEXT" |& less -R
 
   pg-reload:
     shortCut: r
@@ -329,7 +329,7 @@ plugins:
         # Reload database configuration without restart
         set -euo pipefail
         echo "🔄 Reloading configuration for $NAME in namespace $NAMESPACE"
-        kubectl cnpg reload "$NAME" -n "$NAMESPACE" --context "$CONTEXT" |& less -R
+        kubectl cnpg reload "$NAME" -n "$NAMESPACE" --kubeconfig "$KUBECONFIG" --context "$CONTEXT" |& less -R
 
   pg-restart:
     shortCut: Shift-R
@@ -345,7 +345,7 @@ plugins:
         # Restart the database cluster
         set -euo pipefail
         echo "🔄 Restarting cluster $NAME in namespace $NAMESPACE"
-        kubectl cnpg restart "$NAME" -n "$NAMESPACE" --context "$CONTEXT" |& less -R
+        kubectl cnpg restart "$NAME" -n "$NAMESPACE" --kubeconfig "$KUBECONFIG" --context "$CONTEXT" |& less -R
 
   # --- Hibernation Controls ---
 
@@ -362,7 +362,7 @@ plugins:
         # Check hibernate status of database cluster
         set -euo pipefail
         echo "💤 Checking hibernation status for $NAME in namespace $NAMESPACE"
-        kubectl cnpg hibernate status "$NAME" -n "$NAMESPACE" --context "$CONTEXT" |& less -R
+        kubectl cnpg hibernate status "$NAME" -n "$NAMESPACE" --kubeconfig "$KUBECONFIG" --context "$CONTEXT" |& less -R
 
   pg-hibernate:
     shortCut: Shift-H
@@ -378,7 +378,7 @@ plugins:
         # Put database cluster into hibernation
         set -euo pipefail
         echo "💤 Hibernating cluster $NAME in namespace $NAMESPACE"
-        kubectl cnpg hibernate on "$NAME" -n "$NAMESPACE" --context "$CONTEXT" |& less -R
+        kubectl cnpg hibernate on "$NAME" -n "$NAMESPACE" --kubeconfig "$KUBECONFIG" --context "$CONTEXT" |& less -R
 
   pg-hibernate-off:
     shortCut: Shift-W
@@ -394,7 +394,7 @@ plugins:
         # Wake up a hibernated database cluster
         set -euo pipefail
         echo "⏰ Waking up hibernated clusters in namespace $NAME"
-        kubectl cnpg hibernate off "$NAME" -n "$NAME" --context "$CONTEXT" |& less -R
+        kubectl cnpg hibernate off "$NAME" -n "$NAME" --kubeconfig "$KUBECONFIG" --context "$CONTEXT" |& less -R
 
   download-kubeconfig:
     shortCut: Ctrl-J
@@ -420,7 +420,7 @@ plugins:
         echo "📁 Saving to: $CONFIG_PATH"
         
         # Extract the kubeConfig, decode it, and save it directly to the final path
-        if ! kubectl get xkubernetesclusters.k8s.ms.infinity.cgm.ag "$NAME" -o jsonpath='{.status.kubeConfig}' | base64 -d > "$CONFIG_PATH"; then
+        if ! kubectl get xkubernetesclusters.k8s.ms.infinity.cgm.ag "$NAME" -o jsonpath='{.status.kubeConfig}' --kubeconfig "$KUBECONFIG" --context "$CONTEXT" | base64 -d > "$CONFIG_PATH"; then
           echo "❌ Failed to download kubeConfig"
           echo "Press enter to continue"
           read
