@@ -200,7 +200,7 @@ plugins:
         fi
 
   argocd-sync:
-    shortCut: s
+    shortCut: Shift-A
     description: "sync ArgoCD Application"
     scopes:
       - application
@@ -223,7 +223,7 @@ plugins:
         fi
 
   pg-status:
-    shortCut: s
+    shortCut: i
     description: "cnpg status"
     scopes:
       - cluster
@@ -254,7 +254,7 @@ plugins:
 
   pg-logs:
     shortCut: l
-    description: "cnpg logs"
+    description: "cnpg logs (pretty)"
     scopes:
       - cluster
     command: zsh
@@ -262,9 +262,24 @@ plugins:
     args:
       - -c
       - |
-        # Stream logs from the database cluster
+        # Stream pretty printed logs from the database cluster
         set -euo pipefail
-        echo "📜 Streaming logs for $NAME in namespace $NAMESPACE"
+        echo "📊 Streaming pretty printed logs for $NAME in namespace $NAMESPACE"
+        kubectl cnpg logs cluster "$NAME" -f -n "$NAMESPACE" --context "$CONTEXT" | kubectl cnpg logs pretty
+
+  pg-logs-raw:
+    shortCut: Shift-L
+    description: "cnpg logs (raw)"
+    scopes:
+      - cluster
+    command: zsh
+    background: false
+    args:
+      - -c
+      - |
+        # Stream raw logs from the database cluster
+        set -euo pipefail
+        echo "📜 Streaming raw logs for $NAME in namespace $NAMESPACE"
         kubectl cnpg logs cluster "$NAME" -f -n "$NAMESPACE" --context "$CONTEXT"
 
   pg-shell:
