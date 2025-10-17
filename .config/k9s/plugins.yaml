@@ -297,6 +297,259 @@ plugins:
         echo "🐘 Opening PostgreSQL shell for $NAME in namespace $NAMESPACE"
         kubectl cnpg psql "$NAME" -n "$NAMESPACE" --kubeconfig "$KUBECONFIG" --context "$CONTEXT"
 
+  pg-promote:
+    shortCut: Ctrl-O
+    description: "cnpg promote replica"
+    scopes:
+      - cluster
+    command: bash
+    background: false
+    args:
+      - -c
+      - |
+        # Promote a replica instance to primary
+        echo "🔄 Finding replica instances for cluster $NAME in namespace $NAMESPACE..."
+        
+        # Get all replica pods for this cluster
+        replicas=$(kubectl get pods -n "$NAMESPACE" \
+          -l "cnpg.io/cluster=$NAME,cnpg.io/instanceRole=replica" \
+          -o jsonpath='{.items[*].metadata.name}' \
+          --kubeconfig "$KUBECONFIG" --context "$CONTEXT" 2>/dev/null)
+        
+        if [[ -z "$replicas" ]]; then
+          echo "❌ No replica instances found for cluster $NAME"
+          echo "Press enter to continue"
+          read
+          exit 1
+        fi
+        
+        # Convert to array
+        replica_array=($replicas)
+        num_replicas=${#replica_array[@]}
+        
+        echo "📋 Found $num_replicas replica instance(s):"
+        echo ""
+        
+        # Display replicas with letter indices
+        letters=(a b c d e f g h i j k l m n o p q r s t u v w x y z)
+        for i in "${!replica_array[@]}"; do
+          echo "  ${letters[$i]}) ${replica_array[$i]}"
+        done
+        
+        echo ""
+        echo -n "Select replica to promote (letter): "
+        read -r selection
+        
+        # Convert letter to index
+        selected_index=-1
+        for i in "${!letters[@]}"; do
+          if [[ "${letters[$i]}" == "$selection" ]]; then
+            selected_index=$i
+            break
+          fi
+        done
+        
+        # Validate selection
+        if [[ $selected_index -eq -1 ]] || [[ $selected_index -ge $num_replicas ]]; then
+          echo "❌ Invalid selection: $selection"
+          echo "Press enter to continue"
+          read
+          exit 1
+        fi
+        
+        selected_instance="${replica_array[$selected_index]}"
+        
+        # Confirmation prompt
+        echo ""
+        echo "⚠️  You are about to promote: $selected_instance"
+        echo "⚠️  This will make it the new primary of cluster: $NAME"
+        echo ""
+        echo -n "Are you sure? (y/N): "
+        read -r confirm
+        
+        if [[ "$confirm" != "y" ]] && [[ "$confirm" != "Y" ]]; then
+          echo "❌ Promotion cancelled"
+          echo "Press enter to continue"
+          read
+          exit 0
+        fi
+        
+        echo ""
+        echo "🚀 Promoting $selected_instance to primary..."
+        
+        # Execute the promote command
+        if kubectl cnpg promote "$NAME" "$selected_instance" \
+          -n "$NAMESPACE" \
+          --kubeconfig "$KUBECONFIG" --context "$CONTEXT"; then
+          echo "✅ Successfully promoted $selected_instance to primary"
+        else
+          echo "❌ Failed to promote $selected_instance"
+        fi
+        
+        echo "Press enter to continue"
+        read
+
+  pg-destroy:
+    shortCut: Ctrl-K
+    description: "cnpg destroy instance"
+    scopes:
+      - cluster
+    command: bash
+    background: false
+    args:
+      - -c
+      - |
+        # Destroy a CNPG instance and its PVCs
+        echo "⚠️  DESTROY INSTANCE - This operation is DESTRUCTIVE!"
+        echo "🔍 Finding all instances for cluster $NAME in namespace $NAMESPACE..."
+        
+        # Get all pods for this cluster (both primary and replicas)
+        all_instances=$(kubectl get pods -n "$NAMESPACE" \
+          -l "cnpg.io/cluster=$NAME" \
+          -o json \
+          --kubeconfig "$KUBECONFIG" --context "$CONTEXT" 2>/dev/null)
+        
+        if [[ -z "$all_instances" ]] || [[ "$all_instances" == "null" ]]; then
+          echo "❌ No instances found for cluster $NAME"
+          echo "Press enter to continue"
+          read
+          exit 1
+        fi
+        
+        # Parse instances and their roles
+        instance_names=$(echo "$all_instances" | jq -r '.items[].metadata.name')
+        
+        if [[ -z "$instance_names" ]]; then
+          echo "❌ No instances found for cluster $NAME"
+          echo "Press enter to continue"
+          read
+          exit 1
+        fi
+        
+        # Convert to array and get roles
+        instance_array=()
+        role_array=()
+        while IFS= read -r instance; do
+          instance_array+=("$instance")
+          # Get the role of this instance
+          role=$(kubectl get pod "$instance" -n "$NAMESPACE" \
+            -o jsonpath='{.metadata.labels.cnpg\.io/instanceRole}' \
+            --kubeconfig "$KUBECONFIG" --context "$CONTEXT" 2>/dev/null)
+          role_array+=("${role:-unknown}")
+        done <<< "$instance_names"
+        
+        num_instances=${#instance_array[@]}
+        
+        echo ""
+        echo "📋 Found $num_instances instance(s):"
+        echo ""
+        
+        # Display instances with letter indices and roles
+        letters=(a b c d e f g h i j k l m n o p q r s t u v w x y z)
+        for i in "${!instance_array[@]}"; do
+          role_display=""
+          if [[ "${role_array[$i]}" == "primary" ]]; then
+            role_display=" [🔴 PRIMARY]"
+          elif [[ "${role_array[$i]}" == "replica" ]]; then
+            role_display=" [🔵 REPLICA]"
+          else
+            role_display=" [⚪ ${role_array[$i]}]"
+          fi
+          echo "  ${letters[$i]}) ${instance_array[$i]}${role_display}"
+        done
+        
+        echo ""
+        echo -n "Select instance to DESTROY (letter): "
+        read -r selection
+        
+        # Convert letter to index
+        selected_index=-1
+        for i in "${!letters[@]}"; do
+          if [[ "${letters[$i]}" == "$selection" ]]; then
+            selected_index=$i
+            break
+          fi
+        done
+        
+        # Validate selection
+        if [[ $selected_index -eq -1 ]] || [[ $selected_index -ge $num_instances ]]; then
+          echo "❌ Invalid selection: $selection"
+          echo "Press enter to continue"
+          read
+          exit 1
+        fi
+        
+        selected_instance="${instance_array[$selected_index]}"
+        selected_role="${role_array[$selected_index]}"
+        
+        # Show extra warnings
+        echo ""
+        echo "════════════════════════════════════════════════════════"
+        echo "⚠️  WARNING: DESTRUCTIVE OPERATION!"
+        echo "════════════════════════════════════════════════════════"
+        echo ""
+        echo "You are about to DESTROY: $selected_instance"
+        
+        if [[ "$selected_role" == "primary" ]]; then
+          echo ""
+          echo "🔴🔴🔴 CRITICAL WARNING: THIS IS THE PRIMARY INSTANCE! 🔴🔴🔴"
+          echo "Destroying the primary will cause a failover!"
+          echo ""
+        fi
+        
+        echo "This will:"
+        echo "  • Remove the instance from the cluster"
+        echo "  • DELETE all associated PVCs (Persistent Volume Claims)"
+        echo "  • This data will be PERMANENTLY LOST"
+        echo ""
+        echo "Cluster: $NAME"
+        echo "Instance: $selected_instance"
+        echo "Role: ${selected_role^^}"
+        echo ""
+        echo "════════════════════════════════════════════════════════"
+        
+        # First confirmation
+        echo ""
+        echo -n "Are you SURE you want to destroy $selected_instance? (yes/N): "
+        read -r confirm1
+        
+        if [[ "$confirm1" != "yes" ]]; then
+          echo "❌ Operation cancelled"
+          echo "Press enter to continue"
+          read
+          exit 0
+        fi
+        
+        # Second confirmation for safety
+        echo ""
+        echo "⚠️  FINAL CONFIRMATION - This cannot be undone!"
+        echo -n "Type the instance name '$selected_instance' to confirm: "
+        read -r confirm2
+        
+        if [[ "$confirm2" != "$selected_instance" ]]; then
+          echo "❌ Instance name does not match. Operation cancelled"
+          echo "Press enter to continue"
+          read
+          exit 0
+        fi
+        
+        echo ""
+        echo "💥 Destroying $selected_instance and its PVCs..."
+        
+        # Execute the destroy command (without --keep-pvc to destroy PVCs)
+        if kubectl cnpg destroy "$NAME" "$selected_instance" \
+          -n "$NAMESPACE" \
+          --kubeconfig "$KUBECONFIG" --context "$CONTEXT"; then
+          echo ""
+          echo "✅ Successfully destroyed $selected_instance and its PVCs"
+        else
+          echo ""
+          echo "❌ Failed to destroy $selected_instance"
+        fi
+        
+        echo "Press enter to continue"
+        read
+
   # --- Database Maintenance Operations ---
 
   pg-backup:
