@@ -41,7 +41,7 @@ alias back='cd -'  # Go to the previous directory
 # ------------------------------------------------------------------------------
 #  Kubernetes
 # ------------------------------------------------------------------------------
-alias nmt='kubectl run tmp-nw-tool --rm -i --tty --image registry-emea.app.corpintra.net/dockerhub/praqma/network-multitool -- sh' # Run a temporary network multitool pod in Kubernetes
+alias nmt='kubectl run tmp-nw-tool --rm -i --tty --image wbitt/network-multitool -- sh' # Run a temporary network multitool pod in Kubernetes
 alias k0s='k9s' # alias k0s to k9s - Kubernetes TUI
 alias get-admin='kubectl -n kafka get secrets admin -o jsonpath="{.data.user\.password}" | base64 -d | pbcopy' # Get Kafka admin password and copy to clipboard
 alias pf='kubectl port-forward svc/argocd-server -n argocd 8081:443' # Port-forward ArgoCD server
