@@ -2,8 +2,12 @@
 .idea
 /.config/github-copilot/
 secrets.zsh
-secret-*
 
+# Claude Code/Anthropic files (optional, if you want to keep local settings private)
+CLAUDE.local.md
+.claude/
+.claude.json
+CLAUDE.md
 
 # General
 .DS_Store

@@ -76,7 +76,6 @@ alias upp='unset HTTPS_PROXY' # Unset HTTPS proxy
 # ------------------------------------------------------------------------------
 #  Miscellaneous
 # ------------------------------------------------------------------------------
-alias terraform='tofu' # alias terraform to tofu
 alias lens="open -a OpenLens" # Open OpenLens application
 alias vim='nvim' # alias vim to neovim
 alias j="jobs" # list background jobs

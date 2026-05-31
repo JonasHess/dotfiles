@@ -7,41 +7,50 @@ rclone_troubleshoot() {
   local web_ui_port="8080"
   local custom_pvc=""
   local command=""
-  local config_map=""
+  local config_secret=""
+  local interactive_mode=true
 
   # Parse arguments
   while [[ $# -gt 0 ]]; do
     case "$1" in
       -n|--namespace)
         namespace="$2"
+        interactive_mode=false
         shift 2
         ;;
       -i|--image)
         image="$2"
+        interactive_mode=false
         shift 2
         ;;
       -p|--pod-name)
         pod_name="$2"
+        interactive_mode=false
         shift 2
         ;;
       -s|--pv-size)
         pv_size="$2"
+        interactive_mode=false
         shift 2
         ;;
       -u|--ui-port)
         web_ui_port="$2"
+        interactive_mode=false
         shift 2
         ;;
       -c|--custom-pvc)
         custom_pvc="$2"
+        interactive_mode=false
         shift 2
         ;;
-      -cfg|--config-map)
-        config_map="$2"
+      -cfg|--config-secret)
+        config_secret="$2"
+        interactive_mode=false
         shift 2
         ;;
       -cmd|--command)
         command="$2"
+        interactive_mode=false
         shift 2
         ;;
       -h|--help)
@@ -49,15 +58,17 @@ rclone_troubleshoot() {
         echo "Usage: rclone_troubleshoot [options]"
         echo ""
         echo "Options:"
-        echo "  -n, --namespace NAME    Kubernetes namespace (default: default)"
-        echo "  -i, --image NAME        Container image (default: rclone/rclone:latest)"
-        echo "  -p, --pod-name NAME     Pod name (default: rclone-troubleshoot-timestamp)"
-        echo "  -s, --pv-size SIZE      PV size (default: 1Gi) - ignored if --custom-pvc is used"
-        echo "  -u, --ui-port PORT      Local port for web UI (default: 8080)"
-        echo "  -c, --custom-pvc NAME   Use existing PVC instead of creating new one"
-        echo "  -cfg, --config-map NAME Use existing ConfigMap containing rclone.conf"
-        echo "  -cmd, --command CMD     Custom rclone command to run (default: rclone rcd --rc-web-gui)"
-        echo "  -h, --help              Show this help message"
+        echo "  -n, --namespace NAME      Kubernetes namespace (default: default)"
+        echo "  -i, --image NAME          Container image (default: rclone/rclone:latest)"
+        echo "  -p, --pod-name NAME       Pod name (default: rclone-troubleshoot-timestamp)"
+        echo "  -s, --pv-size SIZE        PV size (default: 1Gi) - ignored if --custom-pvc is used"
+        echo "  -u, --ui-port PORT        Local port for web UI (default: 8080)"
+        echo "  -c, --custom-pvc NAME     Use existing PVC instead of creating new one"
+        echo "  -cfg, --config-secret NAME Use existing Secret containing rclone.conf"
+        echo "  -cmd, --command CMD       Custom rclone command to run (default: rclone rcd --rc-web-gui)"
+        echo "  -h, --help                Show this help message"
+        echo ""
+        echo "Interactive mode: Run without arguments to be guided through the options"
         return 0
         ;;
       *)
@@ -67,6 +78,135 @@ rclone_troubleshoot() {
         ;;
     esac
   done
+
+  # Interactive mode
+  if [[ "$interactive_mode" == true ]]; then
+    echo "🚀 rclone Troubleshooting Pod - Interactive Setup"
+    echo "================================================"
+    
+    # Get available rclone secrets
+    echo -e "\n📋 Searching for available rclone configuration secrets..."
+    local secrets_output=$(kubectl get secrets -A | grep -i rclone | grep -v "^NAMESPACE")
+    
+    if [[ -n "$secrets_output" ]]; then
+      echo -e "\nFound the following rclone secrets:"
+      echo "-----------------------------------"
+      
+      # Parse and display secrets with numbers
+      local secret_array=()
+      local namespace_array=()
+      local i=1
+      
+      while IFS= read -r line; do
+        local secret_namespace=$(echo "$line" | awk '{print $1}')
+        local secret_name=$(echo "$line" | awk '{print $2}')
+        secret_array+=("$secret_name")
+        namespace_array+=("$secret_namespace")
+        echo "  $i) $secret_name (namespace: $secret_namespace)"
+        ((i++))
+      done <<< "$secrets_output"
+      
+      echo "  0) None - Create pod without rclone config"
+      echo ""
+      
+      # Ask user to select a secret
+      local selected_index
+      while true; do
+        echo -n "Select a secret (0-$((i-1))): "
+        read selected_index
+        if [[ "$selected_index" =~ ^[0-9]+$ ]] && [ "$selected_index" -ge 0 ] && [ "$selected_index" -lt "$i" ]; then
+          break
+        else
+          echo "Invalid selection. Please enter a number between 0 and $((i-1))"
+        fi
+      done
+      
+      if [ "$selected_index" -gt 0 ]; then
+        config_secret="${secret_array[$selected_index]}"
+        local selected_namespace="${namespace_array[$selected_index]}"
+        
+        # Ask if user wants to use the same namespace as the secret
+        echo -e "\nThe selected secret is in namespace: $selected_namespace"
+        echo -n "Do you want to create the pod in the same namespace? (y/n) [y]: "
+        read use_same_ns
+        use_same_ns=${use_same_ns:-y}
+        
+        if [[ "$use_same_ns" =~ ^[Yy]$ ]]; then
+          namespace="$selected_namespace"
+        else
+          echo -n "Enter namespace for the pod [default]: "
+          read custom_ns
+          namespace=${custom_ns:-default}
+        fi
+      fi
+    else
+      echo "No rclone secrets found in the cluster."
+      echo -n "Do you want to continue without a configuration? (y/n) [y]: "
+      read continue_without
+      continue_without=${continue_without:-y}
+      
+      if [[ ! "$continue_without" =~ ^[Yy]$ ]]; then
+        echo "Aborting..."
+        return 1
+      fi
+      
+      echo -n "Enter namespace for the pod [default]: "
+      read custom_ns
+      namespace=${custom_ns:-default}
+    fi
+    
+    # Ask for other parameters
+    echo -e "\n⚙️  Additional Configuration"
+    echo "----------------------------"
+    
+    # Pod name
+    echo -n "Pod name [rclone-troubleshoot-$(date +%s)]: "
+    read custom_pod_name
+    pod_name=${custom_pod_name:-$pod_name}
+    
+    # PV size
+    echo -n "Persistent volume size [1Gi]: "
+    read custom_pv_size
+    pv_size=${custom_pv_size:-$pv_size}
+    
+    # Web UI port
+    echo -n "Local port for web UI [8080]: "
+    read custom_web_port
+    web_ui_port=${custom_web_port:-$web_ui_port}
+    
+    # Ask about existing PVC
+    echo -n "Do you want to use an existing PVC? (y/n) [n]: "
+    read use_existing_pvc
+    use_existing_pvc=${use_existing_pvc:-n}
+    
+    if [[ "$use_existing_pvc" =~ ^[Yy]$ ]]; then
+      # List PVCs in the namespace
+      echo -e "\nAvailable PVCs in namespace $namespace:"
+      kubectl get pvc -n "$namespace" --no-headers | awk '{print "  - " $1 " (" $2 ", " $4 ")"}'
+      echo -n "Enter PVC name: "
+      read custom_pvc
+    fi
+    
+    echo -e "\n📝 Summary of configuration:"
+    echo "----------------------------"
+    echo "  Namespace: $namespace"
+    echo "  Pod name: $pod_name"
+    echo "  Image: $image"
+    echo "  PV Size: $pv_size"
+    echo "  Web UI port: $web_ui_port"
+    [[ -n "$config_secret" ]] && echo "  Config secret: $config_secret"
+    [[ -n "$custom_pvc" ]] && echo "  Using existing PVC: $custom_pvc"
+    
+    echo ""
+    echo -n "Proceed with this configuration? (y/n) [y]: "
+    read proceed
+    proceed=${proceed:-y}
+    
+    if [[ ! "$proceed" =~ ^[Yy]$ ]]; then
+      echo "Aborting..."
+      return 1
+    fi
+  fi
 
   # Default command if not specified
   if [[ -z "$command" ]]; then
@@ -78,8 +218,8 @@ rclone_troubleshoot() {
   echo "Namespace: $namespace"
   echo "Image: $image"
   
-  if [[ -n "$config_map" ]]; then
-    echo "Using rclone config from ConfigMap: $config_map"
+  if [[ -n "$config_secret" ]]; then
+    echo "Using rclone config from Secret: $config_secret"
   fi
   
   if [[ -z "$custom_pvc" ]]; then
@@ -109,8 +249,8 @@ EOF
   fi
 
   # Create the pod with mounted PV
-  if [[ -n "$config_map" ]]; then
-    # Create pod with both PV and ConfigMap
+  if [[ -n "$config_secret" ]]; then
+    # Create pod with both PV and Secret
     cat <<EOF | kubectl apply -f -
 apiVersion: v1
 kind: Pod
@@ -144,14 +284,14 @@ spec:
     persistentVolumeClaim:
       claimName: ${pvc_name}
   - name: rclone-config
-    configMap:
-      name: ${config_map}
+    secret:
+      secretName: ${config_secret}
       items:
       - key: rclone.conf
         path: rclone.conf
 EOF
   else
-    # Create pod with only PV (no ConfigMap)
+    # Create pod with only PV (no Secret)
     cat <<EOF | kubectl apply -f -
 apiVersion: v1
 kind: Pod

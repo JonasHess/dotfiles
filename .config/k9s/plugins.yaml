@@ -1,7 +1,7 @@
 plugins:
   copy-yaml:
     shortCut: Ctrl-Y
-    description: "Copy resource YAML definition to clipboard"
+    description: "copy yaml"
     scopes:
       - all
     command: zsh
@@ -36,8 +36,15 @@ plugins:
           CLIPBOARD_CMD="cat"
         fi
         
+        # Ensure we use the exact resource type from K9s
+        resource_spec="$RESOURCE_NAME"
+        if [[ "$RESOURCE_NAME" != *"."* ]] && [[ -n "$RESOURCE_GROUP" ]]; then
+          # If RESOURCE_NAME is just the plural name, use the full specification
+          resource_spec="${RESOURCE_NAME}.${RESOURCE_GROUP}"
+        fi
+        
         # Get the resource YAML definition and copy to clipboard
-        if ! kubectl get "$RESOURCE_NAME" -n "$NAMESPACE" "$NAME" -o yaml --context "$CONTEXT" | tee >(eval "$CLIPBOARD_CMD"); then
+        if ! kubectl get "$resource_spec" -n "$NAMESPACE" "$NAME" -o yaml --kubeconfig "$KUBECONFIG" --context "$CONTEXT" | tee >(eval "$CLIPBOARD_CMD"); then
           echo "❌ Failed to get resource YAML - check resource name and permissions"
           echo "Press enter to continue"
           read
@@ -49,7 +56,7 @@ plugins:
         read
   exec-cluster:
     shortCut: Ctrl-X
-    description: "Connect to cluster with MSCC"
+    description: "connect to cluster"
     scopes:
       - kubernetesclusters
       - xkubernetesclusters
@@ -74,7 +81,7 @@ plugins:
   
   test-cluster:
     shortCut: Ctrl-T
-    description: "Test cluster with MSCC-CLI"
+    description: "test cluster"
     scopes:
       - kubernetesclusters
       - xkubernetesclusters
@@ -98,7 +105,7 @@ plugins:
   
   resource-trace:
     shortCut: Ctrl-B
-    description: "Trace Crossplane resource dependencies"
+    description: "beta trace"
     scopes:
       - all
     command: zsh
@@ -110,19 +117,55 @@ plugins:
         set -euo pipefail
         
         echo "🔍 Analyzing resource: $NAME in namespace: $NAMESPACE"
+        echo "🔧 Using resource type: $RESOURCE_NAME"
+        echo "🔧 Resource group: $RESOURCE_GROUP"
         
-        # Dynamically determine resource kind
-        if ! kind=$(kubectl get "$RESOURCE_NAME" -n "$NAMESPACE" "$NAME" -o=jsonpath='{.kind}' 2>/dev/null); then
+        # Use the exact resource specification from K9s
+        # RESOURCE_NAME should be the full CRD name (e.g., xtenants.pgsql.ms.infinity.cgm.ag)
+        # RESOURCE_GROUP should be the API group (e.g., pgsql.ms.infinity.cgm.ag)
+        
+        # Get the kind from the resource using the exact RESOURCE_NAME
+        if ! kind=$(kubectl get "$RESOURCE_NAME" -n "$NAMESPACE" "$NAME" -o=jsonpath='{.kind}' --kubeconfig "$KUBECONFIG" --context "$CONTEXT" 2>/dev/null); then
           echo "❌ Failed to determine resource kind - is this a valid resource?"
           echo "Press enter to continue"
           read
           exit 1
         fi
         
-        echo "📊 Resource kind: $kind - Running dependency trace"
+        # Get the CRD to find the correct version
+        crd_name="$RESOURCE_NAME"
+        if [[ "$RESOURCE_NAME" != *"."* ]] && [[ -n "$RESOURCE_GROUP" ]]; then
+          # If RESOURCE_NAME is just the plural name, construct the full CRD name
+          crd_name="${RESOURCE_NAME}.${RESOURCE_GROUP}"
+        fi
         
-        # Run crossplane trace with proper error handling
-        if ! watch crossplane beta trace "$kind" -n "$NAMESPACE" "$NAME"; then
+        echo "🔧 Looking up CRD: $crd_name"
+        
+        # Get the storage version from the CRD
+        if ! version=$(kubectl get crd "$crd_name" -o=jsonpath='{.spec.versions[?(@.storage==true)].name}' --kubeconfig "$KUBECONFIG" --context "$CONTEXT" 2>/dev/null); then
+          echo "❌ Failed to get version from CRD $crd_name"
+          # Fallback: try to get any version
+          if ! version=$(kubectl get crd "$crd_name" -o=jsonpath='{.spec.versions[0].name}' --kubeconfig "$KUBECONFIG" --context "$CONTEXT" 2>/dev/null); then
+            echo "❌ Failed to determine version for CRD $crd_name"
+            echo "Press enter to continue"
+            read
+            exit 1
+          fi
+        fi
+        
+        # Extract group from CRD name (everything after the first dot)
+        if [[ "$crd_name" == *"."* ]]; then
+          group="${crd_name#*.}"
+          crossplane_format="$kind.$version.$group"
+        else
+          # Core resource
+          crossplane_format="$kind.$version"
+        fi
+        
+        echo "📊 Resource: $crossplane_format - Running dependency trace"
+        
+        # Run crossplane trace with proper format
+        if ! watch crossplane beta trace "$crossplane_format/$NAME" -n "$NAMESPACE"; then
           echo "❌ Trace failed - is this a Crossplane-managed resource?"
         else
           echo "✅ Trace completed"
@@ -133,7 +176,7 @@ plugins:
 
   watch-events:
     shortCut: Shift-E
-    description: "Watch resource events in real-time"
+    description: "watch events"
     scopes:
       - all
     command: zsh
@@ -148,7 +191,7 @@ plugins:
         echo "⌨️ Press Ctrl+C to exit"
         
         # Use kubectl events command with proper error handling
-        if ! kubectl events --context "$CONTEXT" --namespace "$NAMESPACE" \
+        if ! kubectl events --kubeconfig "$KUBECONFIG" --context "$CONTEXT" --namespace "$NAMESPACE" \
            --for "$RESOURCE_NAME.$RESOURCE_GROUP/$NAME" --watch; then
           echo "❌ Failed to watch events - check resource name and permissions"
           echo "Press enter to continue"
@@ -157,8 +200,8 @@ plugins:
         fi
 
   argocd-sync:
-    shortCut: s
-    description: "Sync ArgoCD Application"
+    shortCut: Shift-A
+    description: "sync ArgoCD Application"
     scopes:
       - application
     command: zsh
@@ -172,7 +215,7 @@ plugins:
         
         echo "🔄 Starting sync for ArgoCD application: $NAME in namespace: $NAMESPACE"
         
-        if ! argocd app sync "$NAME" --app-namespace "$NAMESPACE"; then
+        if ! argocd app sync "$NAME" --app-namespace "$NAMESPACE" --kubeconfig "$KUBECONFIG" --kube-context "$CONTEXT"; then
           # We don't show this error since the command runs in background
           # but we'll log it to the background process
           echo "❌ Sync failed for application: $NAME" >&2
@@ -180,8 +223,8 @@ plugins:
         fi
 
   pg-status:
-    shortCut: s
-    description: "Show database status"
+    shortCut: i
+    description: "cnpg status"
     scopes:
       - cluster
     command: zsh
@@ -192,11 +235,11 @@ plugins:
         # Display database cluster status
         set -euo pipefail
         echo "📊 Retrieving status for $NAME in namespace $NAMESPACE"
-        kubectl cnpg status "$NAME" -n "$NAMESPACE" --context "$CONTEXT" |& less -R
+        kubectl cnpg status "$NAME" -n "$NAMESPACE" --kubeconfig "$KUBECONFIG" --context "$CONTEXT" |& less -R
 
   pg-status-verbose:
     shortCut: Shift-S
-    description: "Show detailed database status"
+    description: "cnpg status -v"
     scopes:
       - cluster
     command: zsh
@@ -207,11 +250,11 @@ plugins:
         # Display detailed database cluster status
         set -euo pipefail
         echo "🔍 Retrieving detailed status for $NAME in namespace $NAMESPACE"
-        kubectl cnpg status "$NAME" -n "$NAMESPACE" --context "$CONTEXT" --verbose |& less -R
+        kubectl cnpg status "$NAME" -n "$NAMESPACE" --kubeconfig "$KUBECONFIG" --context "$CONTEXT" --verbose |& less -R
 
   pg-logs:
     shortCut: l
-    description: "View database logs"
+    description: "cnpg logs (pretty)"
     scopes:
       - cluster
     command: zsh
@@ -219,14 +262,29 @@ plugins:
     args:
       - -c
       - |
-        # Stream logs from the database cluster
+        # Stream pretty printed logs from the database cluster
         set -euo pipefail
-        echo "📜 Streaming logs for $NAME in namespace $NAMESPACE"
-        kubectl cnpg logs cluster "$NAME" -f -n "$NAMESPACE" --context "$CONTEXT"
+        echo "📊 Streaming pretty printed logs for $NAME in namespace $NAMESPACE"
+        kubectl cnpg logs cluster "$NAME" -f -n "$NAMESPACE" --kubeconfig "$KUBECONFIG" --context "$CONTEXT" | kubectl cnpg logs pretty
+
+  pg-logs-raw:
+    shortCut: Shift-L
+    description: "cnpg logs (raw)"
+    scopes:
+      - cluster
+    command: zsh
+    background: false
+    args:
+      - -c
+      - |
+        # Stream raw logs from the database cluster
+        set -euo pipefail
+        echo "📜 Streaming raw logs for $NAME in namespace $NAMESPACE"
+        kubectl cnpg logs cluster "$NAME" -f -n "$NAMESPACE" --kubeconfig "$KUBECONFIG" --context "$CONTEXT"
 
   pg-shell:
     shortCut: p
-    description: "Open PostgreSQL shell"
+    description: "cnpg psql"
     scopes:
       - cluster
     command: zsh
@@ -237,13 +295,266 @@ plugins:
         # Open an interactive PSQL shell to the database
         set -euo pipefail
         echo "🐘 Opening PostgreSQL shell for $NAME in namespace $NAMESPACE"
-        kubectl cnpg psql "$NAME" -n "$NAMESPACE" --context "$CONTEXT"
+        kubectl cnpg psql "$NAME" -n "$NAMESPACE" --kubeconfig "$KUBECONFIG" --context "$CONTEXT"
+
+  pg-promote:
+    shortCut: Ctrl-O
+    description: "cnpg promote replica"
+    scopes:
+      - cluster
+    command: bash
+    background: false
+    args:
+      - -c
+      - |
+        # Promote a replica instance to primary
+        echo "🔄 Finding replica instances for cluster $NAME in namespace $NAMESPACE..."
+        
+        # Get all replica pods for this cluster
+        replicas=$(kubectl get pods -n "$NAMESPACE" \
+          -l "cnpg.io/cluster=$NAME,cnpg.io/instanceRole=replica" \
+          -o jsonpath='{.items[*].metadata.name}' \
+          --kubeconfig "$KUBECONFIG" --context "$CONTEXT" 2>/dev/null)
+        
+        if [[ -z "$replicas" ]]; then
+          echo "❌ No replica instances found for cluster $NAME"
+          echo "Press enter to continue"
+          read
+          exit 1
+        fi
+        
+        # Convert to array
+        replica_array=($replicas)
+        num_replicas=${#replica_array[@]}
+        
+        echo "📋 Found $num_replicas replica instance(s):"
+        echo ""
+        
+        # Display replicas with letter indices
+        letters=(a b c d e f g h i j k l m n o p q r s t u v w x y z)
+        for i in "${!replica_array[@]}"; do
+          echo "  ${letters[$i]}) ${replica_array[$i]}"
+        done
+        
+        echo ""
+        echo -n "Select replica to promote (letter): "
+        read -r selection
+        
+        # Convert letter to index
+        selected_index=-1
+        for i in "${!letters[@]}"; do
+          if [[ "${letters[$i]}" == "$selection" ]]; then
+            selected_index=$i
+            break
+          fi
+        done
+        
+        # Validate selection
+        if [[ $selected_index -eq -1 ]] || [[ $selected_index -ge $num_replicas ]]; then
+          echo "❌ Invalid selection: $selection"
+          echo "Press enter to continue"
+          read
+          exit 1
+        fi
+        
+        selected_instance="${replica_array[$selected_index]}"
+        
+        # Confirmation prompt
+        echo ""
+        echo "⚠️  You are about to promote: $selected_instance"
+        echo "⚠️  This will make it the new primary of cluster: $NAME"
+        echo ""
+        echo -n "Are you sure? (y/N): "
+        read -r confirm
+        
+        if [[ "$confirm" != "y" ]] && [[ "$confirm" != "Y" ]]; then
+          echo "❌ Promotion cancelled"
+          echo "Press enter to continue"
+          read
+          exit 0
+        fi
+        
+        echo ""
+        echo "🚀 Promoting $selected_instance to primary..."
+        
+        # Execute the promote command
+        if kubectl cnpg promote "$NAME" "$selected_instance" \
+          -n "$NAMESPACE" \
+          --kubeconfig "$KUBECONFIG" --context "$CONTEXT"; then
+          echo "✅ Successfully promoted $selected_instance to primary"
+        else
+          echo "❌ Failed to promote $selected_instance"
+        fi
+        
+        echo "Press enter to continue"
+        read
+
+  pg-destroy:
+    shortCut: Ctrl-K
+    description: "cnpg destroy instance"
+    scopes:
+      - cluster
+    command: bash
+    background: false
+    args:
+      - -c
+      - |
+        # Destroy a CNPG instance and its PVCs
+        echo "⚠️  DESTROY INSTANCE - This operation is DESTRUCTIVE!"
+        echo "🔍 Finding all instances for cluster $NAME in namespace $NAMESPACE..."
+        
+        # Get all pods for this cluster (both primary and replicas)
+        all_instances=$(kubectl get pods -n "$NAMESPACE" \
+          -l "cnpg.io/cluster=$NAME" \
+          -o json \
+          --kubeconfig "$KUBECONFIG" --context "$CONTEXT" 2>/dev/null)
+        
+        if [[ -z "$all_instances" ]] || [[ "$all_instances" == "null" ]]; then
+          echo "❌ No instances found for cluster $NAME"
+          echo "Press enter to continue"
+          read
+          exit 1
+        fi
+        
+        # Parse instances and their roles
+        instance_names=$(echo "$all_instances" | jq -r '.items[].metadata.name')
+        
+        if [[ -z "$instance_names" ]]; then
+          echo "❌ No instances found for cluster $NAME"
+          echo "Press enter to continue"
+          read
+          exit 1
+        fi
+        
+        # Convert to array and get roles
+        instance_array=()
+        role_array=()
+        while IFS= read -r instance; do
+          instance_array+=("$instance")
+          # Get the role of this instance
+          role=$(kubectl get pod "$instance" -n "$NAMESPACE" \
+            -o jsonpath='{.metadata.labels.cnpg\.io/instanceRole}' \
+            --kubeconfig "$KUBECONFIG" --context "$CONTEXT" 2>/dev/null)
+          role_array+=("${role:-unknown}")
+        done <<< "$instance_names"
+        
+        num_instances=${#instance_array[@]}
+        
+        echo ""
+        echo "📋 Found $num_instances instance(s):"
+        echo ""
+        
+        # Display instances with letter indices and roles
+        letters=(a b c d e f g h i j k l m n o p q r s t u v w x y z)
+        for i in "${!instance_array[@]}"; do
+          role_display=""
+          if [[ "${role_array[$i]}" == "primary" ]]; then
+            role_display=" [🔴 PRIMARY]"
+          elif [[ "${role_array[$i]}" == "replica" ]]; then
+            role_display=" [🔵 REPLICA]"
+          else
+            role_display=" [⚪ ${role_array[$i]}]"
+          fi
+          echo "  ${letters[$i]}) ${instance_array[$i]}${role_display}"
+        done
+        
+        echo ""
+        echo -n "Select instance to DESTROY (letter): "
+        read -r selection
+        
+        # Convert letter to index
+        selected_index=-1
+        for i in "${!letters[@]}"; do
+          if [[ "${letters[$i]}" == "$selection" ]]; then
+            selected_index=$i
+            break
+          fi
+        done
+        
+        # Validate selection
+        if [[ $selected_index -eq -1 ]] || [[ $selected_index -ge $num_instances ]]; then
+          echo "❌ Invalid selection: $selection"
+          echo "Press enter to continue"
+          read
+          exit 1
+        fi
+        
+        selected_instance="${instance_array[$selected_index]}"
+        selected_role="${role_array[$selected_index]}"
+        
+        # Show extra warnings
+        echo ""
+        echo "════════════════════════════════════════════════════════"
+        echo "⚠️  WARNING: DESTRUCTIVE OPERATION!"
+        echo "════════════════════════════════════════════════════════"
+        echo ""
+        echo "You are about to DESTROY: $selected_instance"
+        
+        if [[ "$selected_role" == "primary" ]]; then
+          echo ""
+          echo "🔴🔴🔴 CRITICAL WARNING: THIS IS THE PRIMARY INSTANCE! 🔴🔴🔴"
+          echo "Destroying the primary will cause a failover!"
+          echo ""
+        fi
+        
+        echo "This will:"
+        echo "  • Remove the instance from the cluster"
+        echo "  • DELETE all associated PVCs (Persistent Volume Claims)"
+        echo "  • This data will be PERMANENTLY LOST"
+        echo ""
+        echo "Cluster: $NAME"
+        echo "Instance: $selected_instance"
+        echo "Role: ${selected_role^^}"
+        echo ""
+        echo "════════════════════════════════════════════════════════"
+        
+        # First confirmation
+        echo ""
+        echo -n "Are you SURE you want to destroy $selected_instance? (yes/N): "
+        read -r confirm1
+        
+        if [[ "$confirm1" != "yes" ]]; then
+          echo "❌ Operation cancelled"
+          echo "Press enter to continue"
+          read
+          exit 0
+        fi
+        
+        # Second confirmation for safety
+        echo ""
+        echo "⚠️  FINAL CONFIRMATION - This cannot be undone!"
+        echo -n "Type the instance name '$selected_instance' to confirm: "
+        read -r confirm2
+        
+        if [[ "$confirm2" != "$selected_instance" ]]; then
+          echo "❌ Instance name does not match. Operation cancelled"
+          echo "Press enter to continue"
+          read
+          exit 0
+        fi
+        
+        echo ""
+        echo "💥 Destroying $selected_instance and its PVCs..."
+        
+        # Execute the destroy command (without --keep-pvc to destroy PVCs)
+        if kubectl cnpg destroy "$NAME" "$selected_instance" \
+          -n "$NAMESPACE" \
+          --kubeconfig "$KUBECONFIG" --context "$CONTEXT"; then
+          echo ""
+          echo "✅ Successfully destroyed $selected_instance and its PVCs"
+        else
+          echo ""
+          echo "❌ Failed to destroy $selected_instance"
+        fi
+        
+        echo "Press enter to continue"
+        read
 
   # --- Database Maintenance Operations ---
 
   pg-backup:
     shortCut: b
-    description: "Create database backup"
+    description: "cnpg backup"
     scopes:
       - cluster
     command: zsh
@@ -255,11 +566,11 @@ plugins:
         # Create a backup of the database cluster
         set -euo pipefail
         echo "💾 Creating backup for $NAME in namespace $NAMESPACE"
-        kubectl cnpg backup "$NAME" -n "$NAMESPACE" --context "$CONTEXT" |& less -R
+        kubectl cnpg backup "$NAME" -n "$NAMESPACE" --kubeconfig "$KUBECONFIG" --context "$CONTEXT" |& less -R
 
   pg-reload:
     shortCut: r
-    description: "Reload database configuration"
+    description: "cnpg reload"
     confirm: true
     scopes:
       - cluster
@@ -271,11 +582,11 @@ plugins:
         # Reload database configuration without restart
         set -euo pipefail
         echo "🔄 Reloading configuration for $NAME in namespace $NAMESPACE"
-        kubectl cnpg reload "$NAME" -n "$NAMESPACE" --context "$CONTEXT" |& less -R
+        kubectl cnpg reload "$NAME" -n "$NAMESPACE" --kubeconfig "$KUBECONFIG" --context "$CONTEXT" |& less -R
 
   pg-restart:
     shortCut: Shift-R
-    description: "Restart database cluster"
+    description: "cnpg restart"
     confirm: true
     scopes:
       - cluster
@@ -287,13 +598,13 @@ plugins:
         # Restart the database cluster
         set -euo pipefail
         echo "🔄 Restarting cluster $NAME in namespace $NAMESPACE"
-        kubectl cnpg restart "$NAME" -n "$NAMESPACE" --context "$CONTEXT" |& less -R
+        kubectl cnpg restart "$NAME" -n "$NAMESPACE" --kubeconfig "$KUBECONFIG" --context "$CONTEXT" |& less -R
 
   # --- Hibernation Controls ---
 
   pg-hibernate-status:
     shortCut: h
-    description: "Check database hibernate status"
+    description: "cnpg hibernate status"
     scopes:
       - cluster
     command: zsh
@@ -304,11 +615,11 @@ plugins:
         # Check hibernate status of database cluster
         set -euo pipefail
         echo "💤 Checking hibernation status for $NAME in namespace $NAMESPACE"
-        kubectl cnpg hibernate status "$NAME" -n "$NAMESPACE" --context "$CONTEXT" |& less -R
+        kubectl cnpg hibernate status "$NAME" -n "$NAMESPACE" --kubeconfig "$KUBECONFIG" --context "$CONTEXT" |& less -R
 
   pg-hibernate:
     shortCut: Shift-H
-    description: "Hibernate database cluster"
+    description: "cnpg hibernate on"
     confirm: true
     scopes:
       - cluster
@@ -320,11 +631,11 @@ plugins:
         # Put database cluster into hibernation
         set -euo pipefail
         echo "💤 Hibernating cluster $NAME in namespace $NAMESPACE"
-        kubectl cnpg hibernate on "$NAME" -n "$NAMESPACE" --context "$CONTEXT" |& less -R
+        kubectl cnpg hibernate on "$NAME" -n "$NAMESPACE" --kubeconfig "$KUBECONFIG" --context "$CONTEXT" |& less -R
 
   pg-hibernate-off:
     shortCut: Shift-W
-    description: "Wake up hibernated cluster"
+    description: "cnpg hibernate off"
     confirm: true
     scopes:
       - namespace
@@ -336,11 +647,11 @@ plugins:
         # Wake up a hibernated database cluster
         set -euo pipefail
         echo "⏰ Waking up hibernated clusters in namespace $NAME"
-        kubectl cnpg hibernate off "$NAME" -n "$NAME" --context "$CONTEXT" |& less -R
+        kubectl cnpg hibernate off "$NAME" -n "$NAME" --kubeconfig "$KUBECONFIG" --context "$CONTEXT" |& less -R
 
   download-kubeconfig:
     shortCut: Ctrl-J
-    description: "Download kubeConfig to ~/.kube/config.d/"
+    description: "download kubeConfig"
     scopes:
       - xkubernetesclusters
     command: zsh
@@ -362,7 +673,7 @@ plugins:
         echo "📁 Saving to: $CONFIG_PATH"
         
         # Extract the kubeConfig, decode it, and save it directly to the final path
-        if ! kubectl get xkubernetesclusters.k8s.ms.infinity.cgm.ag "$NAME" -o jsonpath='{.status.kubeConfig}' | base64 -d > "$CONFIG_PATH"; then
+        if ! kubectl get xkubernetesclusters.k8s.ms.infinity.cgm.ag "$NAME" -o jsonpath='{.status.kubeConfig}' --kubeconfig "$KUBECONFIG" --context "$CONTEXT" | base64 -d > "$CONFIG_PATH"; then
           echo "❌ Failed to download kubeConfig"
           echo "Press enter to continue"
           read
