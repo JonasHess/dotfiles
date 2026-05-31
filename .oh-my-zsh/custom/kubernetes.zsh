@@ -20,6 +20,12 @@
 
 
 kubeconfig-reload() {
+    # Require kubecm before touching anything.
+    if ! command -v kubecm >/dev/null 2>&1; then
+        echo "Error: kubecm is not installed. Install it with: brew install kubecm" >&2
+        return 1
+    fi
+
     # Create backup directory if it doesn't exist
     mkdir -p ~/.kube/backups
     
@@ -55,7 +61,10 @@ EOF
         # Extract directory name for context prefix
         dir_name=$(basename $(dirname "$config_file"))
         echo "Adding $config_file with prefix $dir_name"
-        kubecm add -f "$config_file" --context-prefix "$dir_name" --silence-table --cover
+        if ! kubecm add -f "$config_file" --context-prefix "$dir_name" --silence-table --cover; then
+            echo "Error: kubecm failed to add $config_file (prefix: $dir_name)" >&2
+            return 1
+        fi
         echo "  ✓ Success"
     done
     
