@@ -2,6 +2,10 @@
 # Kubernetes Configuration
 # ------------------------------------------------------------------------------
 
+# Use the gke-gcloud-auth-plugin for authenticating to GKE clusters
+# (required since the in-tree gcp auth provider was removed from kubectl).
+export USE_GKE_GCLOUD_AUTH_PLUGIN=True
+
 # This script merges multiple Kubernetes configuration files into a single KUBECONFIG environment variable.
 # 
 # Steps:
