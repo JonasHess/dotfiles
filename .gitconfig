@@ -1,9 +1,9 @@
 [user]
   name = Jonas Hess
-  email = Jonas@Hess.pm
+	email = j.hess@mvb-online.de
 [core]
   editor = nvim
-  excludesfile = ~/.gitignore
+  excludesfile = ~/.gitignore_global
   autocrlf = input
 [color]
   branch = auto

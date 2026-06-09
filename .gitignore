@@ -40,3 +40,6 @@ clouds.yaml
 /.config/xnviewmp/
 auth.yml
 .config/helm/
+
+notes-local/
+**/notes-local/

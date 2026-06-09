@@ -1,0 +1,114 @@
+# Global git ignore — applies to every repo via core.excludesfile.
+# Managed by stow (linked to ~/.gitignore_global). Separate from this
+# repo's own .gitignore, which only governs the dotfiles repository.
+#
+# Keep this list to things that are personal / machine- / tool-specific and
+# would be noise in *any* project. Project-specific artifacts (node_modules,
+# build output, etc.) belong in each project's own .gitignore, not here.
+
+# === macOS ============================================================
+.DS_Store
+.DS_Store?
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+.fseventsd
+.DocumentRevisions-V100
+.TemporaryItems
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
+Icon
+
+
+# === Windows ==========================================================
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+Desktop.ini
+$RECYCLE.BIN/
+*.lnk
+*.stackdump
+
+# === Linux ============================================================
+*~
+.fuse_hidden*
+.directory
+.Trash-*
+.nfs*
+
+# === JetBrains IDEs (IntelliJ, PyCharm, GoLand, ...) ==================
+.idea/
+*.iml
+*.ipr
+*.iws
+cmake-build-*/
+out/
+
+# === Visual Studio Code ===============================================
+.vscode/
+*.code-workspace
+.history/
+
+# === Vim / Neovim =====================================================
+*.swp
+*.swo
+*.swn
+Session.vim
+.netrwhist
+tags
+
+# === Emacs ============================================================
+\#*\#
+.\#*
+*~
+
+# === Sublime Text =====================================================
+*.sublime-workspace
+*.sublime-project
+
+# === Eclipse / NetBeans ===============================================
+.metadata/
+.classpath
+.project
+.settings/
+nbproject/private/
+
+# === macOS / iOS tooling ==============================================
+*.xcuserstate
+xcuserdata/
+
+# === Editor & temp backups ============================================
+*.bak
+*.tmp
+*.orig
+*.rej
+*.log
+
+# === Environment & secrets (catch-alls; still scope per project too) ==
+.env
+.env.local
+.env.*.local
+*.pem
+*.key
+secrets.zsh
+
+# === direnv / asdf / tooling ==========================================
+.direnv/
+.tool-versions.local
+
+# === Claude Code / Anthropic local settings ===========================
+**/.claude/settings.local.json
+CLAUDE.local.md
+
+
+# === personal temp files ####
+notes-local/
+**/notes-local/
