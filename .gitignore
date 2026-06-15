@@ -3,11 +3,13 @@
 /.config/github-copilot/
 secrets.zsh
 
-# Claude Code/Anthropic files (optional, if you want to keep local settings private)
+# Claude Code/Anthropic files
 CLAUDE.local.md
-.claude/
 .claude.json
-CLAUDE.md
+# Ignore Claude Code runtime data, but DO track the stow-managed global config
+.claude/*
+!.claude/CLAUDE.md
+!.claude/skills/
 
 # General
 .DS_Store
