@@ -1,10 +1,8 @@
 # Disable terminal bell sound
 unsetopt BEEP
 
-# Load and initialize the completion system.
-# Skip in WSL, where oh-my-zsh already runs compinit and a second call is both
-# redundant and prone to the insecure-directory warning.
-if [[ ! -f /proc/sys/fs/binfmt_misc/WSLInterop ]] && ! grep -qi 'microsoft\|wsl' /proc/version 2>/dev/null; then
-  autoload -Uz compinit
-  compinit
-fi
+# NOTE: completion init (compinit) is intentionally NOT done here.
+# oh-my-zsh already runs compinit, and this file is only ever sourced *by*
+# oh-my-zsh, so a compinit here is always a redundant second pass (~300ms +
+# a duplicate compdump). In WSL the insecure-directory warning is handled by
+# ZSH_DISABLE_COMPFIX, set in .zshrc before oh-my-zsh loads.
