@@ -1,0 +1,22 @@
+# ~/.gitconfig.local — per-user, machine-specific git config.
+#
+# This file is REQUIRED and git-ignored. Copy it into place and fill in your
+# own details so your identity never gets committed to the dotfiles repo:
+#
+#     cp .gitconfig.local.example ~/.gitconfig.local
+#
+# It is pulled in via `[include]` from the tracked .gitconfig, and values here
+# override anything set there.
+
+[user]
+	name = Your Name
+	email = you@example.com
+
+# Credential helper is platform-specific — uncomment the one for your machine.
+[credential]
+	# macOS (Keychain):
+	helper = osxkeychain
+	# Linux / WSL (cache credentials in memory for 1h):
+	# helper = cache --timeout=3600
+	# Any platform, if you use the GitHub CLI for auth:
+	# helper = !gh auth git-credential

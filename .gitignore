@@ -43,5 +43,28 @@ clouds.yaml
 auth.yml
 .config/helm/
 
+# Per-user / per-machine config — copied from the tracked *.example templates and
+# never committed (see .gitconfig.local.example). Keeps personal identity and
+# host-specific settings out of the shared repo.
+.gitconfig.local
+.zshrc.local
+
+# Cloud & Kubernetes credentials / runtime state — never commit to dotfiles.
+# (~/.config is a stow symlink into this repo, so tools write their state here.)
+.config/gcloud/
+.config/gh/hosts.yml
+.kube/
+
+# Tool-managed runtime state & caches written into the stowed ~/.config.
+# These are large, machine-specific, and must never land in the dotfiles repo
+# (e.g. nvm installs entire Node toolchains here).
+.config/nvm/
+.config/homebrew/
+.config/iterm2/
+.config/configstore/
+
+# Gemini CLI local context
+GEMINI.md
+
 notes-local/
 **/notes-local/

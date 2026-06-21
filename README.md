@@ -9,6 +9,41 @@
 
 Configurations for various tools and applications that I use on a daily basis. Feel free to explore and copy.
 
+These dotfiles are intended to work on both **macOS** and **Windows (WSL / Ubuntu)**.
+
+## Prerequisites
+
+Install [GNU Stow](https://www.gnu.org/software/stow/) (symlink farm manager) and
+Zsh, then make Zsh your default shell.
+
+### macOS (Homebrew)
+
+``` bash
+brew install stow zsh
+chsh -s $(which zsh)
+```
+
+### Debian / Ubuntu / WSL
+
+``` bash
+sudo apt-get update && sudo apt-get install -y stow zsh
+chsh -s "$(which zsh)"
+```
+
+After changing your shell, log out and back in (or restart the WSL session), then
+confirm with `echo $SHELL`.
+
+## Local configuration (required)
+
+Personal identity and machine-specific settings are kept out of the repo in
+git-ignored `*.local` files. Create them from the provided templates before you
+start using these dotfiles:
+
+``` bash
+cp .gitconfig.local.example ~/.gitconfig.local   # set your git name/email + credential helper
+# Optional: ~/.zshrc.local is sourced at the end of .zshrc for per-machine tweaks
+```
+
 ### Download git submodules
 ``` bash
 git submodule update --init --recursive

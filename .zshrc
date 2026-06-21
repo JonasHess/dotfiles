@@ -2,7 +2,26 @@
 # export ZSH_TMUX_AUTOSTART=true
 # ZSH_ZELLIJ_AUTOSTART=true
 
-eval $(/opt/homebrew/bin/brew shellenv)
+# Detect WSL once, so platform-specific tweaks below can branch on it.
+if [[ -f /proc/sys/fs/binfmt_misc/WSLInterop ]] || grep -qi 'microsoft\|wsl' /proc/version 2>/dev/null; then
+  IS_WSL=true
+else
+  IS_WSL=false
+fi
+
+# Load Homebrew if present. Covers Apple Silicon, Intel macOS, and Linuxbrew/WSL;
+# silently skipped on machines without Homebrew so this stays portable.
+for brew_path in /opt/homebrew/bin/brew /usr/local/bin/brew /home/linuxbrew/.linuxbrew/bin/brew; do
+  if [ -x "$brew_path" ]; then
+    eval "$("$brew_path" shellenv)"
+    break
+  fi
+done
+
+# WSL ships completion dirs that fail compinit's security check; skip it there.
+if [[ "$IS_WSL" == true ]]; then
+  export ZSH_DISABLE_COMPFIX="true"
+fi
 
 # Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
 # Initialization code that may require console input (password prompts, [y/n]
@@ -119,5 +138,12 @@ fi
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 
+# Kubernetes: quick context/namespace switching (kubectx + kubens, fzf picker).
+alias kx='kubectx'   # `kx` = fuzzy-pick context | `kx <name>` = switch | `kx -` = toggle previous
+alias kns='kubens'   # `kns` = fuzzy-pick namespace
+
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
+
+# Per-machine shell overrides (PATHs, secrets, host-specific tweaks). Git-ignored.
+[[ -f ~/.zshrc.local ]] && source ~/.zshrc.local
