@@ -147,3 +147,9 @@ alias kns='kubens'   # `kns` = fuzzy-pick namespace
 
 # Per-machine shell overrides (PATHs, secrets, host-specific tweaks). Git-ignored.
 [[ -f ~/.zshrc.local ]] && source ~/.zshrc.local
+
+# SDKMAN (SDK version manager for Java/Kotlin/Gradle/etc). Portable via
+# $SDKMAN_DIR and guarded, so it is a no-op when SDKMAN isn't installed.
+# THIS MUST BE AT THE END OF THE FILE FOR SDKMAN TO WORK!!!
+export SDKMAN_DIR="${SDKMAN_DIR:-$HOME/.sdkman}"
+[[ -s "$SDKMAN_DIR/bin/sdkman-init.sh" ]] && source "$SDKMAN_DIR/bin/sdkman-init.sh"

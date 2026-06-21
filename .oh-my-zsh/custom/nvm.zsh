@@ -2,8 +2,16 @@
 # NodeJs and NVM Configuration
 # -----------------------------------------------------
 
-# Set up NVM directory
-export NVM_DIR="${NVM_DIR:-$HOME/.nvm}"
+# Set up NVM directory. Respect an explicit $NVM_DIR; otherwise prefer an
+# existing XDG-style install ($XDG_CONFIG_HOME/nvm or ~/.config/nvm) before
+# falling back to the classic ~/.nvm. Keeps this portable across both layouts.
+if [ -z "$NVM_DIR" ]; then
+    if [ -d "${XDG_CONFIG_HOME:-$HOME/.config}/nvm" ]; then
+        export NVM_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/nvm"
+    else
+        export NVM_DIR="$HOME/.nvm"
+    fi
+fi
 mkdir -p "$NVM_DIR"
 
 # Load NVM immediately - try multiple common locations
