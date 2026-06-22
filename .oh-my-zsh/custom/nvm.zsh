@@ -34,19 +34,15 @@ unset __nvm_candidate
 if [ -n "$__NVM_SH" ]; then
     autoload -U add-zsh-hook
 
-    # Auto-use the Node version from the directory's .nvmrc. Only ever called
-    # once nvm itself is loaded.
+    # If the current directory tree pins a Node version (.nvmrc), switch to it.
+    # We let `nvm use` read the file itself — it strips comments natively, so we
+    # never parse .nvmrc by hand (doing so broke nvm's internal sed on commented
+    # files). Runs silently so it doesn't disrupt the Powerlevel10k instant
+    # prompt; if the pinned version isn't installed, `nvm use` is a quiet no-op
+    # (run `nvm install` to fetch it).
     __nvm_auto_use() {
-        local nvmrc_path
-        nvmrc_path="$(nvm_find_nvmrc)"
-        if [ -n "$nvmrc_path" ]; then
-            local nvmrc_node_version=$(nvm version "$(cat "${nvmrc_path}")")
-            if [ "$nvmrc_node_version" = "N/A" ]; then
-                nvm install
-            elif [ "$nvmrc_node_version" != "$(nvm version)" ]; then
-                nvm use >/dev/null 2>&1
-            fi
-        fi
+        [ -n "$(nvm_find_nvmrc)" ] || return
+        nvm use >/dev/null 2>&1
     }
 
     # The real loader: source nvm.sh + completion once, drop the shims, swap the
