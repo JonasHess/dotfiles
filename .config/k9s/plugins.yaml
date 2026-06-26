@@ -686,3 +686,58 @@ plugins:
         echo "✅ KubeConfig downloaded successfully to: $CONFIG_PATH"
         echo "Press enter to continue"
         read
+
+  image-pull-speed:
+    shortCut: Shift-D
+    description: "image pull speed"
+    scopes:
+      - pods
+    command: zsh
+    background: false
+    args:
+      - -c
+      - |
+        set -euo pipefail
+
+        echo "📥 Checking image download speed for pod $NAME in namespace $NAMESPACE"
+
+        NODE=$(kubectl get pod "$NAME" -n "$NAMESPACE" --context "$CONTEXT" -o jsonpath='{.spec.nodeName}')
+        if [ -z "$NODE" ]; then
+          echo "❌ Failed to get node name for pod $NAME"
+          echo "Press enter to continue"
+          read
+          exit 1
+        fi
+
+        echo "🖥️  Running on node: $NODE"
+        echo ""
+
+        kubectl run speed-check-$$ --rm -it --restart=Never --image=alpine --privileged \
+          --context "$CONTEXT" \
+          --overrides="{\"spec\":{\"nodeName\":\"$NODE\",\"hostPID\":true}}" -- \
+          nsenter -t 1 -m -u -n -i -p -- sh -c '
+            CTR="/snap/microk8s/current/bin/ctr --address /var/snap/microk8s/common/run/containerd.sock -n k8s.io"
+            ACTIVE=$($CTR content active 2>/dev/null)
+            S1=$(echo "$ACTIVE" | tail -1 | awk "{gsub(/MB/,\"\"); print \$2}")
+            sleep 10
+            ACTIVE2=$($CTR content active 2>/dev/null)
+            S2=$(echo "$ACTIVE2" | tail -1 | awk "{gsub(/MB/,\"\"); print \$2}")
+
+            echo "=== Active Downloads ==="
+            if [ -z "$ACTIVE" ] || [ $(echo "$ACTIVE" | wc -l) -le 1 ]; then
+              echo "No active downloads"
+            else
+              echo "$ACTIVE"
+              echo ""
+              if [ -z "$S2" ] || [ $(echo "$ACTIVE2" | wc -l) -le 1 ]; then
+                echo "Download completed during measurement"
+              else
+                SPEED=$(echo "$S2 $S1" | awk "{printf \"%.1f\", (\$1-\$2)/10*1024}")
+                echo "Download Speed: ${SPEED} KB/s"
+              fi
+            fi
+          '
+
+        echo ""
+        echo "Press enter to continue"
+        read

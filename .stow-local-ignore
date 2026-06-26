@@ -22,4 +22,8 @@ _darcs
 ^/LICENSE.*
 ^/COPYING
 
+# Don't stow .nvmrc into $HOME: it would make the home directory look like a
+# Node project and trigger nvm's auto-use (a ~600ms switch) on every shell.
+^/\.nvmrc
+
 \.DS_Store

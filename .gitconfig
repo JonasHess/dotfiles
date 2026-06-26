@@ -1,6 +1,8 @@
-[user]
-  name = Jonas Hess
-	email = j.hess@mvb-online.de
+# Per-user identity and machine-specific config live in ~/.gitconfig.local,
+# which is git-ignored. Copy .gitconfig.local.example to ~/.gitconfig.local and
+# fill in your name/email/credential helper. Values there override anything below.
+[include]
+	path = ~/.gitconfig.local
 [core]
   editor = nvim
   excludesfile = ~/.gitignore_global
@@ -14,8 +16,8 @@
   defaultBranch = main
 [web]
   browser = firefox
-[credential]
-  helper = osxkeychain
+# Credential helper is platform-specific (osxkeychain on macOS, cache/store or
+# the gh helper on Linux/WSL), so it is configured in ~/.gitconfig.local.
 [push]
   default = simple
 [merge]
