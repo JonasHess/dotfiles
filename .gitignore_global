@@ -45,7 +45,6 @@ $RECYCLE.BIN/
 .nfs*
 
 # === JetBrains IDEs (IntelliJ, PyCharm, GoLand, ...) ==================
-.idea/
 *.iml
 *.ipr
 *.iws
@@ -107,7 +106,7 @@ secrets.zsh
 # === Claude Code / Anthropic local settings ===========================
 **/.claude/settings.local.json
 CLAUDE.local.md
-
+.playwright-mcp/
 
 # === personal temp files ####
 notes-local/

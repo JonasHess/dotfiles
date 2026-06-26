@@ -11,6 +11,10 @@
 - Confirm before irreversible or outward-facing actions: force-push, deleting branches,
   rewriting git history, pushing to remotes, deleting cloud resources.
 - Show me the command before running anything I can't easily undo.
+- Treat Redmine as a production environment — be very careful about what you change there.
+  Reading is fine, but EVERY write operation (creating/updating/closing tickets, editing
+  fields, adding comments, changing status/assignee, etc.) must be reviewed and explicitly
+  approved by me before you execute it. Show me exactly what you intend to write first.
 
 > Real enforcement lives in `~/.claude/settings.json` permission `deny`/`ask` rules and
 > hooks — this section is only the human-readable intent.
@@ -18,7 +22,7 @@
 ## Git & commits
 - Never commit, push, or open a PR without my explicit OK — leave changes in the working tree.
 - After each finished unit of work, proactively suggest a commit message
-  (format: `Ref #<ticket>: <summary>`).
+  (format: `Ref #<ticket> <summary>`).
 - Never add a `Co-Authored-By` trailer (or any "Co-Authored" line) to commit messages.
 
 ## Cross-repo context
@@ -57,11 +61,16 @@
   mode: run `idea -e <path>` (the `-e` flag opens a single file without loading a project).
 - Use a descriptive filename and the right extension (`.md`, `.txt`, `.eml`/`.txt` for
   emails, `.textile` for Redmine tickets). Inside a repo, default to `<repo-root>/notes-local/`.
-- Don't drop files directly into `notes-local/` — use a subfolder named after the ticket
-  number plus a 2–4 word explanation (e.g. `notes-local/12345-auth-bug-summary/`), or, if no
-  ticket is known, the current date (e.g. `notes-local/2026-06-16-auth-bug-summary/`).
-- When generating text into a new file (report, summary, etc.), I'll likely want the current
-  ticket number in the filename — include it when known (e.g. `12345-summary.md`).
+- Organize `notes-local/` by release, then by ticket:
+  `notes-local/<release>/#<ticket>-<slug>/<files>`, e.g.
+  `notes-local/release 3.18/#43134-mixed-vat/assessment.textile`.
+  - `<release>` is the top-level folder (e.g. `release 3.18`). If I haven't told you the
+    release and you can't infer it, ASK me which release before creating the folder.
+  - The ticket folder is `#<ticket>-<slug>` (`#` + ticket number + 2–4 word slug). When there
+    is no real ticket, use `#24466-<slug>` — locally `#24466` is the "no real ticket" marker.
+    (#24466 must still NEVER appear in real Redmine ticket content.)
+  - Files *inside* that folder get plain, simple names — don't repeat the ticket number
+    (e.g. `summary.md`, `assessment.textile`, `logs/`).
 - When I specify a tone, language style, or target audience (e.g. "easy to understand for
   someone new to the topic"), apply it silently. NEVER mention or explain the instruction in
   the generated text itself — just write to that brief.

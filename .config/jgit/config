@@ -1,3 +1,9 @@
 [filesystem "JetBrains s.r.o.|17.0.10|/dev/disk3s5"]
 	timestampResolution = 8000 nanoseconds
 	minRacyThreshold = 0 nanoseconds
+[filesystem "Amazon.com Inc.|17.0.19|/dev/disk3s5"]
+	timestampResolution = 10000 nanoseconds
+	minRacyThreshold = 0 nanoseconds
+[filesystem "JetBrains s.r.o.|25.0.2|/dev/disk3s5"]
+	timestampResolution = 3000 nanoseconds
+	minRacyThreshold = 0 nanoseconds

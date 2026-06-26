@@ -1,0 +1,1 @@
+export CLAUDE_TITLE_PREFIX="Claude "
