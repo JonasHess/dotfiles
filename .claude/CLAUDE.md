@@ -60,17 +60,17 @@
 - After you finish writing the file, open it for me in IntelliJ's standalone LightEdit
   mode: run `idea -e <path>` (the `-e` flag opens a single file without loading a project).
 - Use a descriptive filename and the right extension (`.md`, `.txt`, `.eml`/`.txt` for
-  emails, `.textile` for Redmine tickets). Inside a repo, default to `<repo-root>/notes-local/`.
+  emails; Redmine tickets are Markdown, so `.md`). Inside a repo, default to `<repo-root>/notes-local/`.
 - Organize `notes-local/` by release, then by ticket:
   `notes-local/<release>/#<ticket>-<slug>/<files>`, e.g.
-  `notes-local/release 3.18/#43134-mixed-vat/assessment.textile`.
+  `notes-local/release 3.18/#43134-mixed-vat/assessment.md`.
   - `<release>` is the top-level folder (e.g. `release 3.18`). If I haven't told you the
     release and you can't infer it, ASK me which release before creating the folder.
   - The ticket folder is `#<ticket>-<slug>` (`#` + ticket number + 2–4 word slug). When there
     is no real ticket, use `#24466-<slug>` — locally `#24466` is the "no real ticket" marker.
     (#24466 must still NEVER appear in real Redmine ticket content.)
   - Files *inside* that folder get plain, simple names — don't repeat the ticket number
-    (e.g. `summary.md`, `assessment.textile`, `logs/`).
+    (e.g. `summary.md`, `assessment.md`, `logs/`).
 - When I specify a tone, language style, or target audience (e.g. "easy to understand for
   someone new to the topic"), apply it silently. NEVER mention or explain the instruction in
   the generated text itself — just write to that brief.
