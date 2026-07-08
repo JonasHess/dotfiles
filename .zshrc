@@ -23,6 +23,20 @@ if [[ "$IS_WSL" == true ]]; then
   export ZSH_DISABLE_COMPFIX="true"
 fi
 
+# Auto-attach Herdr (herdr.dev) in interactive terminals. Runs before oh-my-zsh
+# so Herdr opens instantly; after detaching (ctrl+b q) the rest of this file
+# loads and you land in a normal shell. Skipped when:
+#   - already inside a Herdr pane ($HERDR_SOCKET_PATH is set in panes)
+#   - inside an IDE-embedded terminal (VS Code, JetBrains)
+#   - opted out via HERDR_AUTOSTART=false (e.g. `HERDR_AUTOSTART=false zsh`)
+if [[ -o interactive ]] \
+   && [[ -z "$HERDR_SOCKET_PATH" ]] \
+   && [[ "$TERM_PROGRAM" != "vscode" && "$TERMINAL_EMULATOR" != "JetBrains-JediTerm" ]] \
+   && [[ "$HERDR_AUTOSTART" != "false" ]] \
+   && command -v herdr >/dev/null 2>&1; then
+  herdr
+fi
+
 # Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
 # Initialization code that may require console input (password prompts, [y/n]
 # confirmations, etc.) must go above this block; everything else may go below.
