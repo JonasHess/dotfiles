@@ -26,8 +26,10 @@
 - Never add a `Co-Authored-By` trailer (or any "Co-Authored" line) to commit messages.
 
 ## Cross-repo context
-- My repos are cloned under `~/repos/<name>`. Freely read sibling repos for cross-project
-  context without asking each time.
+- My repos live under `~/repos/<name>` OR `~/IdeaProjects/<name>`, depending on the machine
+  (this config is shared across two setups). A given repo may exist in only one of them, so
+  when locating a sibling repo, check both roots and use whichever actually exists — don't
+  assume `~/repos`. Freely read sibling repos for cross-project context without asking each time.
 
 
 ## How I like you to work
