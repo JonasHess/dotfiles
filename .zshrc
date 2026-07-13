@@ -25,16 +25,23 @@ fi
 
 # Auto-attach Herdr (herdr.dev) in interactive terminals. Runs before oh-my-zsh
 # so Herdr opens instantly; after detaching (ctrl+b q) the rest of this file
-# loads and you land in a normal shell. Skipped when:
+# loads and you land in a normal shell. Each project gets its own persistent
+# Herdr session (named after the project), created on first use and reattached
+# by later terminals. Skipped when:
 #   - already inside a Herdr pane ($HERDR_SOCKET_PATH is set in panes)
-#   - inside an IDE-embedded terminal (VS Code, JetBrains)
 #   - opted out via HERDR_AUTOSTART=false (e.g. `HERDR_AUTOSTART=false zsh`)
 if [[ -o interactive ]] \
    && [[ -z "$HERDR_SOCKET_PATH" ]] \
-   && [[ "$TERM_PROGRAM" != "vscode" && "$TERMINAL_EMULATOR" != "JetBrains-JediTerm" ]] \
    && [[ "$HERDR_AUTOSTART" != "false" ]] \
    && command -v herdr >/dev/null 2>&1; then
-  herdr
+  () {
+    local root space
+    root="$(git rev-parse --show-toplevel 2>/dev/null)" || root="$PWD"
+    space="${root:t}"                     # basename via zsh :t modifier
+    space="${space//[^A-Za-z0-9._-]/-}"   # sanitize for use as a session name
+    [[ -z "$space" ]] && space="default"  # e.g. cwd is "/"
+    herdr --session "$space"
+  }
 fi
 
 # Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
