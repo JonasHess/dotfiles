@@ -10,6 +10,8 @@ CLAUDE.local.md
 .claude/*
 !.claude/CLAUDE.md
 !.claude/skills/
+!.claude/settings.json
+!.claude/statusline.sh
 
 # General
 .DS_Store
