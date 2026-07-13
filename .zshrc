@@ -25,9 +25,15 @@ fi
 
 # Auto-attach Herdr (herdr.dev) in interactive terminals. Runs before oh-my-zsh
 # so Herdr opens instantly; after detaching (ctrl+b q) the rest of this file
-# loads and you land in a normal shell. Each project gets its own persistent
-# Herdr session (named after the project), created on first use and reattached
-# by later terminals. Skipped when:
+# loads and you land in a normal shell.
+#
+# One shared Herdr session holds every project as a separate workspace ("space"),
+# so all projects stay visible in the sidebar. Before attaching, focus this
+# project's workspace (creating it on first use) so the terminal lands in the
+# right space instead of wherever Herdr was last. The workspace is named after
+# the git repo root (or the current dir), matching Herdr's own default labeling.
+#
+# Skipped when:
 #   - already inside a Herdr pane ($HERDR_SOCKET_PATH is set in panes)
 #   - opted out via HERDR_AUTOSTART=false (e.g. `HERDR_AUTOSTART=false zsh`)
 if [[ -o interactive ]] \
@@ -35,12 +41,39 @@ if [[ -o interactive ]] \
    && [[ "$HERDR_AUTOSTART" != "false" ]] \
    && command -v herdr >/dev/null 2>&1; then
   () {
-    local root space
+    local root name list wid
     root="$(git rev-parse --show-toplevel 2>/dev/null)" || root="$PWD"
-    space="${root:t}"                     # basename via zsh :t modifier
-    space="${space//[^A-Za-z0-9._-]/-}"   # sanitize for use as a session name
-    [[ -z "$space" ]] && space="default"  # e.g. cwd is "/"
-    herdr --session "$space"
+    name="${root:t}"                    # basename via zsh :t modifier
+    name="${name//[^A-Za-z0-9._-]/-}"   # sanitize for use as a workspace label
+    [[ -z "$name" ]] && name="home"     # e.g. cwd is "/"
+
+    # If the server is already up, focus this project's workspace (or create it).
+    # `herdr workspace list` fails on a cold start; then the plain attach below
+    # starts the server, whose first workspace Herdr already labels by directory.
+    # Parsing needs python3; without it, fall back to a plain attach rather than
+    # risk creating a duplicate workspace from a failed lookup.
+    if command -v python3 >/dev/null 2>&1 && list="$(herdr workspace list 2>/dev/null)"; then
+      wid="$(HERDR_WS_NAME="$name" python3 - "$list" <<'PY' 2>/dev/null
+import json, os, sys
+name = os.environ["HERDR_WS_NAME"]
+try:
+    workspaces = json.loads(sys.argv[1])["result"]["workspaces"]
+except Exception:
+    sys.exit(0)
+for w in workspaces:
+    if w.get("label") == name:
+        print(w.get("workspace_id", ""))
+        break
+PY
+)"
+      if [[ -n "$wid" ]]; then
+        herdr workspace focus "$wid" >/dev/null 2>&1
+      else
+        herdr workspace create --cwd "$root" --label "$name" --focus >/dev/null 2>&1
+      fi
+    fi
+
+    herdr
   }
 fi
 
