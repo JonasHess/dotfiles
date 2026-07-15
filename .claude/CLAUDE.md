@@ -25,12 +25,30 @@
   (format: `Ref #<ticket> <summary>`).
 - Never add a `Co-Authored-By` trailer (or any "Co-Authored" line) to commit messages.
 
+## Working in a git repository
+- The first time a conversation touches code in an existing git repo, check which
+  branch we're on before reading or writing code — we want to avoid working on the
+  wrong branch.
+- Never switch, create, or reset branches yourself without my explicit OK.
+- If you suspect we're on the wrong branch (e.g. a feature branch when the task is
+  for a different ticket, `main`/`master` when I'd expect a working branch) or that
+  the branch is behind its remote, STOP and warn me before continuing. Let me decide
+  whether to switch or pull.
+
 ## Cross-repo context
 - My repos live under `~/repos/<name>` OR `~/IdeaProjects/<name>`, depending on the machine
   (this config is shared across two setups). A given repo may exist in only one of them, so
   when locating a sibling repo, check both roots and use whichever actually exists — don't
   assume `~/repos`. Freely read sibling repos for cross-project context without asking each time.
 
+
+## VPN / network reachability
+- If a server that should be reachable is not (e.g. GitLab, internal Git remotes,
+  internal APIs/registries) — connection refused, timeout, DNS failure, host not
+  found — it is very likely because the corporate VPN client is not connected.
+- In that case, STOP what you're doing. Don't retry blindly, work around it, or
+  switch to an alternate host. Tell me the server looks unreachable, that it's
+  probably the VPN, and ask me to reconnect the VPN before you continue.
 
 ## How I like you to work
 - Be concise. Lead with the answer, then detail.
