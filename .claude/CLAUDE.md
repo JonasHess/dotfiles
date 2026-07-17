@@ -94,3 +94,34 @@
 - When I specify a tone, language style, or target audience (e.g. "easy to understand for
   someone new to the topic"), apply it silently. NEVER mention or explain the instruction in
   the generated text itself — just write to that brief.
+
+## Ticket knowledgebase (mandatory)
+- This whole section applies only to **real tickets**. `#24466` (the "no real ticket"
+  marker) is EXCLUDED — don't auto-search for or auto-create a knowledgebase for it. A
+  knowledgebase under `#24466-*` is only made if I explicitly ask.
+- Whenever we work on a real ticket, you MUST keep a per-ticket knowledgebase as a Markdown
+  file in `notes-local/`. Use the same layout as above:
+  `notes-local/<release>/#<ticket>-<slug>/knowledgebase.md`.
+- Create it as soon as we start on a ticket if it doesn't exist yet. From then on, keep it
+  updated **on your own, without being asked** — refresh it along the way as you learn
+  things, make decisions, or change the plan. Don't wait until the end.
+- This file is the key reference for starting NEW conversations on the same ticket. Write
+  it so a future Claude with no memory of this session can get up to speed fast. It should
+  work as an **index**: point to the relevant code (full paths + symbols), other
+  `notes-local/` files, tickets/MRs, logs, and commands — so the next conversation knows
+  where to go to gather information rather than rediscovering it.
+- Good contents: the goal/ticket summary, current status, key findings, decisions made and
+  why, open questions, what's been tried, next steps, and the pointers/index described
+  above.
+- This file is a working note and is **NEVER committed** (it lives in `notes-local/`, which
+  is git-ignored). Because it won't be committed, it MAY freely reference other local files
+  and paths — the "don't reference other files" rule for code comments does not apply here.
+- When we start on a real ticket, fetch its current information from Redmine via the
+  Redmine MCP on your own, without being asked (this is a read, which is always allowed —
+  only Redmine *writes* need my approval). Use it to ground the knowledgebase and your
+  understanding, and refresh it if the ticket may have changed since you last looked.
+- It is YOUR responsibility to find an existing knowledgebase before starting work — don't
+  wait for me to point you to it. As soon as a ticket comes up, search `notes-local/`
+  across releases for a matching `#<ticket>-*` folder / `knowledgebase.md` (the ticket may
+  be filed under a release folder you don't expect, so search broadly, not just one path).
+  If you find one, read it before doing anything else. If you don't, create a fresh one.
