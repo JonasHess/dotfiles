@@ -196,6 +196,27 @@ fi
 alias kx='kubectx'   # `kx` = fuzzy-pick context | `kx <name>` = switch | `kx -` = toggle previous
 alias kns='kubens'   # `kns` = fuzzy-pick namespace
 
+# ticket-doctor: run the pubx ticket-doctor tool from its .env without manual exports.
+# The pubx repo path is resolved at call time — it may live under ~/repos or
+# ~/IdeaProjects depending on the workstation.
+ticket-doctor() {
+  local pubx
+  for pubx in "$HOME/repos/pubx" "$HOME/IdeaProjects/pubx"; do
+    [[ -d "$pubx" ]] && break
+    pubx=""
+  done
+  if [[ -z "$pubx" ]]; then
+    echo "ticket-doctor: pubx repo not found under ~/repos or ~/IdeaProjects" >&2
+    return 1
+  fi
+  local dir="$pubx/deploy/tools/ticket-doctor"
+  if [[ ! -f "$dir/.env" ]]; then
+    echo "ticket-doctor: no .env at $dir (copy .env-example to .env first)" >&2
+    return 1
+  fi
+  ( set -a; source "$dir/.env"; set +a; python3 "$dir/ticket_doctor.py" "$@" )
+}
+
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
