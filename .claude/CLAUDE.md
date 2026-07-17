@@ -31,9 +31,10 @@
   prefix verbatim. Only change it if there's a good reason (e.g. the current wording is wrong
   or misleading), and say why when you do.
 - Keep commit messages you generate to a single line (the subject only) — no body, no bullet
-  list. If a change feels too big for one line, that's a signal to split it into smaller
-  commits. Exceptions: mechanical multi-line messages you don't author, like merge commits
-  and reverts.
+  list. Keep that line short and to the point (aim for ~72 characters); summarize, don't list
+  every change. If a change feels too big for one short line, that's a signal to split it into
+  smaller commits. Exceptions: mechanical multi-line messages you don't author, like merge
+  commits and reverts.
 - Never add a `Co-Authored-By` trailer (or any "Co-Authored" line) to commit messages.
 
 ## Working in a git repository
