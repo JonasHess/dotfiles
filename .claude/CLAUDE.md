@@ -21,8 +21,19 @@
 
 ## Git & commits
 - Never commit, push, or open a PR without my explicit OK — leave changes in the working tree.
-- After each finished unit of work, proactively suggest a commit message
-  (format: `Ref #<ticket> <summary>`).
+- After each finished unit of work, proactively suggest a commit message. Format:
+  `Ref #<ticket> <very short ticket description> - <what changes in this commit>`
+  (e.g. `Ref #43134 mixed VAT rounding - fix cent rounding on split invoices`). Only the
+  part after ` - ` describes this specific commit.
+- The `Ref #<ticket> <very short ticket description>` prefix must stay STABLE across all of a
+  ticket's commits — don't reword it each time. Before writing a commit for a ticket, look at
+  that ticket's existing commits (e.g. `git log --grep "#<ticket>"`) and reuse the exact same
+  prefix verbatim. Only change it if there's a good reason (e.g. the current wording is wrong
+  or misleading), and say why when you do.
+- Keep commit messages you generate to a single line (the subject only) — no body, no bullet
+  list. If a change feels too big for one line, that's a signal to split it into smaller
+  commits. Exceptions: mechanical multi-line messages you don't author, like merge commits
+  and reverts.
 - Never add a `Co-Authored-By` trailer (or any "Co-Authored" line) to commit messages.
 
 ## Working in a git repository
@@ -78,7 +89,8 @@ one-line replies (a bare "Done" doesn't need a TL;DR or a footer).
 - **Body.** Then the actual answer.
 
 - **Footer block at the bottom.** After the answer, add a `---` divider, then:
-  - `💾 **Commit:**` — a ready-to-use commit message in `Ref #<ticket> <summary>` format,
+  - `💾 **Commit:**` — a ready-to-use commit message in the format above
+    (`Ref #<ticket> <very short ticket description> - <what changes in this commit>`),
     shown *only* when the working tree has uncommitted changes (omit the line entirely when
     it's clean). Check working-tree state only when changes plausibly exist — not on pure
     Q&A. This satisfies the "proactively suggest a commit message" rule above and keeps a
