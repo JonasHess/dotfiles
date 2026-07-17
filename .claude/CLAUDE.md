@@ -63,6 +63,43 @@
   first marked "(Recommended)", with a confidence % (~90% = very confident it's right,
   ~10% = likely a bad choice) and a one-line why (and why weaker options are worse).
 
+## Response format
+Structure every non-trivial response so I can catch up fast. Skip all of this on trivial
+one-line replies (a bare "Done" doesn't need a TL;DR or a footer).
+
+- **TL;DR at the top.** Open with a blockquoted H3 that summarizes the whole response in
+  1–2 sentences:
+
+  ```
+  > ### 📌 TL;DR
+  > One or two sentences.
+  ```
+
+- **Body.** Then the actual answer.
+
+- **Footer block at the bottom.** After the answer, add a `---` divider, then:
+  - `💾 **Commit:**` — a ready-to-use commit message in `Ref #<ticket> <summary>` format,
+    shown *only* when the working tree has uncommitted changes (omit the line entirely when
+    it's clean). Check working-tree state only when changes plausibly exist — not on pure
+    Q&A. This satisfies the "proactively suggest a commit message" rule above and keeps a
+    ready message in front of me whenever the tree is dirty.
+  - `❓ **<question>?**` — frame this as a real question: summarize the pending decision as
+    the question (e.g. `❓ **Commit it now?**`), or if nothing is pending, ask what the next
+    step should be (e.g. `❓ **Next step?**`). Follow it with my likely answers as
+    plain-numbered, first-person, pickable options so I can just reply `1`, each with a
+    rough likelihood %. Give two by default (occasionally a third when a genuinely distinct
+    one exists), leaning in different directions.
+
+- Use exactly one emoji per line as above (📌 / 💾 / ❓) and plain numbers (`1.`, `2.`) for
+  the options — no other decoration. In-terminal rendering has no color, so the blockquote
+  heading, the divider, and these markers are what set the blocks apart; keep them
+  consistent.
+
+- The ❓ predictions are separate from the `(Recommended)` + confidence-% rule above. When a
+  response ends with a real decision, keep that recommendation in the prose *and* give the
+  pickable predictions in the footer — fold them together when they agree, but still surface
+  the opposing direction.
+
 ## Code comments
 - Comments must describe the current state of the code, not its history. Never explain how
   something used to be done or what changed ("previously…", "now we…", "renamed from…").
