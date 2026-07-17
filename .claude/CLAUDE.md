@@ -83,6 +83,11 @@ one-line replies (a bare "Done" doesn't need a TL;DR or a footer).
     it's clean). Check working-tree state only when changes plausibly exist — not on pure
     Q&A. This satisfies the "proactively suggest a commit message" rule above and keeps a
     ready message in front of me whenever the tree is dirty.
+    - Don't assume your session memory reflects the real git state — I may have committed
+      between turns. Re-check with `git status` periodically, and *always* before you
+      actually suggest committing. No need to check on every response, but don't let it go
+      stale. Base the message only on genuinely uncommitted changes; if the tree is clean,
+      show no 💾 line.
   - `❓ **<question>?**` — frame this as a real question: summarize the pending decision as
     the question (e.g. `❓ **Commit it now?**`), or if nothing is pending, ask what the next
     step should be (e.g. `❓ **Next step?**`). Follow it with my likely answers as
