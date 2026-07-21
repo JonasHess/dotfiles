@@ -12,10 +12,20 @@ Claude to write a ticket draft to a file (see *Output* below) — **not** to con
 Redmine API or create anything in Redmine. Only push to Redmine after explicit approval (see
 *Pushing to Redmine*).
 
-**Ticket #24466 is an internal convention** meaning "I was too lazy to create a ticket." It is
-not a real ticket. Never mention, reference, or include #24466 in the **ticket content** you
-write (the Markdown body that may go to Redmine). It *is* allowed locally as the "no real ticket"
-marker in the `notes-local/` folder name (`#24466-<slug>/`) — see *Output*.
+**A newly drafted ticket has NO number yet.** When you draft a new ticket, its real Redmine
+number is unknown until the user gives it to you. Use `#NEW` as the placeholder — `Ref #NEW`
+in the content and `#NEW-<slug>/` for the folder. NEVER invent a number, and NEVER use
+`#24466` for a ticket you're drafting. Actively remind the user, each time, that you don't
+know the ticket number yet. As soon as the user provides the real number, rename the folder
+and replace every `#NEW` (filename + content) with it; `#NEW` must never remain in anything
+that goes to Redmine.
+
+**Ticket #24466 is an internal convention** meaning "I was too lazy to create a ticket" — for
+scratch/analysis that will never become a real ticket. It is not a real ticket and is NOT a
+placeholder for a ticket you're drafting (that's `#NEW`). Never mention, reference, or include
+#24466 in the **ticket content** you write (the Markdown body that may go to Redmine). It *is*
+allowed locally as the "no real ticket" marker in a `notes-local/` folder name
+(`#24466-<slug>/`) for non-ticket scratch work — see *Output*.
 
 ## Rules (non-negotiable)
 
@@ -112,9 +122,11 @@ Follow the global "Writing text deliverables" rules:
 1. Write the ticket to a file with the **`.md`** extension — never just print it in chat.
 2. Location: `<repo-root>/notes-local/<release>/#<ticket>-<slug>/`, e.g.
    `notes-local/release 3.18/#43134-mixed-vat/ticket.md`. If you don't know the release,
-   ask the user before creating the folder. When there is no real ticket number, use
-   `#24466-<slug>` (the local "no real ticket" marker). The file inside gets a plain name like
-   `ticket.md` — don't repeat the ticket number in the filename.
+   ask the user before creating the folder. Since a freshly drafted ticket has no number yet,
+   use `#NEW-<slug>` (e.g. `#NEW-mixed-vat/`) and remind the user you don't know the number;
+   rename the folder once they give you the real number. (`#24466-<slug>` is only for
+   scratch work that will never become a ticket — not for a ticket you're drafting.) The file
+   inside gets a plain name like `ticket.md` — don't repeat the ticket number in the filename.
 3. After writing, open it for the user: `idea -e <path>`.
 
 ## Pushing to Redmine

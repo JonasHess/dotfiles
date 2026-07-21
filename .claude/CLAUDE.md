@@ -141,9 +141,18 @@ one-line replies (a bare "Done" doesn't need a TL;DR or a footer).
   `notes-local/release 3.18/#43134-mixed-vat/assessment.md`.
   - `<release>` is the top-level folder (e.g. `release 3.18`). If I haven't told you the
     release and you can't infer it, ASK me which release before creating the folder.
-  - The ticket folder is `#<ticket>-<slug>` (`#` + ticket number + 2–4 word slug). When there
-    is no real ticket, use `#24466-<slug>` — locally `#24466` is the "no real ticket" marker.
-    (#24466 must still NEVER appear in real Redmine ticket content.)
+  - The ticket folder is `#<ticket>-<slug>` (`#` + ticket number + 2–4 word slug). Three cases:
+    - **Known ticket number:** use it, e.g. `#43134-mixed-vat`.
+    - **Drafting a NEW ticket whose number isn't known yet:** use `#NEW-<slug>` (e.g.
+      `#NEW-mixed-vat`) and `Ref #NEW` in the draft — NEVER invent a number and NEVER use
+      `#24466` for this. `#NEW` means "real ticket, number still unknown." Actively remind me
+      each time that I haven't given you the ticket number yet. Once I tell you the real
+      number, rename the folder and replace every `#NEW` (filenames + content) with it right
+      away. `#NEW` must NEVER remain in content that goes into Redmine.
+    - **Scratch/analysis that will never become a ticket:** use `#24466-<slug>` — locally
+      `#24466` is the "no real ticket" marker. `#24466` must NEVER appear in real Redmine
+      ticket content, and must NEVER be used as a placeholder for a ticket you're drafting
+      (that's what `#NEW` is for).
   - Files *inside* that folder get plain, simple names — don't repeat the ticket number
     (e.g. `summary.md`, `assessment.md`, `logs/`).
 - When I specify a tone, language style, or target audience (e.g. "easy to understand for
