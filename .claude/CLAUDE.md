@@ -189,3 +189,10 @@ one-line replies (a bare "Done" doesn't need a TL;DR or a footer).
   across releases for a matching `#<ticket>-*` folder / `knowledgebase.md` (the ticket may
   be filed under a release folder you don't expect, so search broadly, not just one path).
   If you find one, read it before doing anything else. If you don't, create a fresh one.
+- Watch for scope drift: if it becomes clear the ticket's actual scope has changed from what
+  its Redmine description says (we're solving a different/bigger/smaller problem, the
+  requirements shifted, etc.), actively raise it and ASK me whether I want to rewrite the
+  ticket description. Don't silently work around the mismatch. NEVER update the Redmine ticket
+  yourself — only I decide whether and how to change it (this is a Redmine write, which always
+  needs my explicit approval). You may draft a proposed new description locally for me to
+  review if I ask.
