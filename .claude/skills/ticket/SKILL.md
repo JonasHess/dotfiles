@@ -36,6 +36,9 @@ allowed locally as the "no real ticket" marker in a `notes-local/` folder name
   another language.
 - **Reading level:** Use **simple, easy-to-understand language**. Short sentences. Avoid
   jargon where a plain word works. A non-expert should grasp the ticket.
+- **Always include the title:** Every ticket draft MUST start with the recommended ticket
+  **title** (the Redmine *Subject*), clearly labelled so it's obvious it goes in the Subject
+  field, not the description body. Never write only the description — the title is required.
 - **Technical tickets:** If the ticket is technical (developer-facing, internal engineering
   work — infrastructure, refactor, API, data migration, etc.), prefix the **title** with
   `[TT] `. Non-technical / business tickets get no prefix.
@@ -65,6 +68,10 @@ bugs need strong reproduction detail in AS-IS-STATE.
 ## Template
 
 ```
+**Title (Redmine Subject):** <recommended ticket title — prefix with `[TT] ` if technical>
+
+---
+
 #### User Story / Description
 
 As a user I ...
