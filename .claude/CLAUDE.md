@@ -62,6 +62,16 @@
   switch to an alternate host. Tell me the server looks unreachable, that it's
   probably the VPN, and ask me to reconnect the VPN before you continue.
 
+## Local dev testing & logs
+- When you test or exercise anything against my local dev environment, always try to find and
+  read the relevant application logs afterwards, and actively look for errors, warnings, and
+  stack traces — don't just trust that a request "looked fine." Surface anything suspicious you
+  find, even if the feature seemed to work.
+- Learn where each application writes its logs and REMEMBER it, so you can find them faster
+  next time. Save the log location(s) per application to your persistent memory (a `reference`
+  memory keyed by app name) once you've confirmed them, and check that memory first before
+  hunting for logs again.
+
 ## How I like you to work
 - Be concise. Lead with the answer, then detail.
 - When you mention a file, always give its full absolute path (e.g.
