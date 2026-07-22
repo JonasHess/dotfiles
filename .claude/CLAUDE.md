@@ -11,6 +11,14 @@
 - Confirm before irreversible or outward-facing actions: force-push, deleting branches,
   rewriting git history, pushing to remotes, deleting cloud resources.
 - Show me the command before running anything I can't easily undo.
+- Always target the environment EXPLICITLY — never rely on whatever "current"/default context
+  happens to be selected, so we can't act on the wrong one by mistake. For `kubectl`, always
+  pass an explicit `--context` (and `--namespace` where it matters); never depend on the
+  current context. Do the same for other environment-scoped tools, especially cloud CLIs:
+  `gcloud --project`/`--account`, `aws --profile`/`--region`, `az --subscription`, `docker
+  context`/`-H`, `helm --kube-context`, etc. If you don't know which context/project to use,
+  ASK — don't guess. And per the rules above, prod contexts stay read-only unless I say
+  otherwise.
 - Treat Redmine as a production environment — be very careful about what you change there.
   Reading is fine, but EVERY write operation (creating/updating/closing tickets, editing
   fields, adding comments, changing status/assignee, etc.) must be reviewed and explicitly
