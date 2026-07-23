@@ -135,13 +135,24 @@ one-line replies (a bare "Done" doesn't need a TL;DR or a footer).
   - `❓ **<question>?**` — frame this as a real question: summarize the pending decision as
     the question (e.g. `❓ **Commit it now?**`), or if nothing is pending, ask what the next
     step should be (e.g. `❓ **Next step?**`). Follow it with my likely answers as
-    plain-numbered, first-person, pickable options so I can just reply `1`, each with a
-    rough likelihood %. Give two by default (occasionally a third when a genuinely distinct
-    one exists), leaning in different directions.
+    first-person, pickable options, each with a rough likelihood %. Give two by default
+    (occasionally a third when a genuinely distinct one exists), leaning in different
+    directions.
+  - **Label options with a unique per-question prefix**, NOT bare `1./2.`. Each question gets
+    its own letter, and options are `<Letter><number>` — `A1`, `A2`, `A3` for one question,
+    `B1`, `B2` for the next, then `C1`… Advance the letter on every new question (look at the
+    letter you used last and increment; wrap `Z`→`A`). This way when I answer with a code like
+    `B2` it's unambiguous which question I'm answering — bare numbers get confused across
+    turns. Example:
+    ```
+    ❓ **Commit it now?**
+    C1. "Yes, commit it." (~70%)
+    C2. "No, leave it in the working tree." (~30%)
+    ```
 
-- Use exactly one emoji per line as above (📌 / 💾 / ❓) and plain numbers (`1.`, `2.`) for
-  the options — no other decoration. In-terminal rendering has no color, so the blockquote
-  heading, the divider, and these markers are what set the blocks apart; keep them
+- Use exactly one emoji per line as above (📌 / 💾 / ❓) and the `<Letter><number>` option
+  labels described above — no other decoration. In-terminal rendering has no color, so the
+  blockquote heading, the divider, and these markers are what set the blocks apart; keep them
   consistent.
 
 - The ❓ predictions are separate from the `(Recommended)` + confidence-% rule above. When a
