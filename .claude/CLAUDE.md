@@ -50,6 +50,12 @@
   every change. If a change feels too big for one short line, that's a signal to split it into
   smaller commits. Exceptions: mechanical multi-line messages you don't author, like merge
   commits and reverts.
+- I sometimes reword commit messages by hand. Before you amend or otherwise rewrite an
+  existing commit's message (`git commit --amend`, rebase reword, etc.), check the commit's
+  current message first (e.g. `git log -1 --format=%B`). If it differs from what you last wrote
+  — i.e. I've reworded it — do NOT blindly overwrite it: preserve my wording, or ask me before
+  changing it. Amending to add staged changes is fine, but keep my message unless I say
+  otherwise.
 - Never add a `Co-Authored-By` trailer (or any "Co-Authored" line) to commit messages.
 
 ## Working in a git repository
