@@ -24,11 +24,23 @@
   fields, adding comments, changing status/assignee, etc.) must be reviewed and explicitly
   approved by me before you execute it. Show me exactly what you intend to write first.
 
+- **Approval is always per-action and one-time, never standing.** For ANY critical, irreversible,
+  or outward-facing action — commits, pushes, force-pushes, deleting branches, rewriting history,
+  Redmine writes, deleting cloud resources, destructive/DB commands, mutating any environment,
+  etc. — my OK covers only that one action. A previous "yes" is NEVER blanket consent to do it
+  again. Ask me fresh and get explicit go-ahead before EVERY such action, no matter how many
+  I've already approved this session. When unsure whether something crosses this line, treat it
+  as if it does and ask.
+
 > Real enforcement lives in `~/.claude/settings.json` permission `deny`/`ask` rules and
 > hooks — this section is only the human-readable intent.
 
 ## Git & commits
 - Never commit, push, or open a PR without my explicit OK — leave changes in the working tree.
+  This approval is **per-commit and one-time**: my OK for one commit does NOT grant standing
+  permission for later ones. ALWAYS ask and get my explicit go-ahead again before EACH
+  commit, no matter how many I've already approved this session. Never treat a previous "yes"
+  as blanket consent to keep committing on my behalf.
 - After each finished unit of work, proactively suggest a commit message. First pick the
   message **profile** by looking at the repo's existing history — inspect `git log` and match
   the style that's already there. The controlled profile set (currently two):
