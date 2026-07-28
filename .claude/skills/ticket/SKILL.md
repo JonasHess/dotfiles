@@ -55,6 +55,10 @@ allowed locally as the "no real ticket" marker in a `notes-local/` folder name
   one shot. First propose your best-guess *user-story sentence* (see *User story* below) as an
   assumption, and ASK me whether I agree or want it different. Only after I've confirmed the
   user story do you write out the rest of the ticket.
+- **Reference other tickets sparingly:** Mentioning a related ticket is good, but don't
+  overdo it. Cite a given ticket number only once — ideally in one dedicated spot (e.g. a
+  "Related" note) — rather than repeating the same `#<number>` across multiple sections. One
+  clear reference beats the same ticket sprinkled everywhere.
 - **Problem first (bugs & tasks):** For **bug** and **task** tickets, keep the *problem* in the
   foreground — describe what is wrong or what is needed and why it matters (the impact), not how
   to fix it. You MAY suggest a possible solution, but clearly mark it as a suggestion and state
