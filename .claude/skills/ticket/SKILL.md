@@ -39,13 +39,22 @@ allowed locally as the "no real ticket" marker in a `notes-local/` folder name
 - **Always include the title:** Every ticket draft MUST start with the recommended ticket
   **title** (the Redmine *Subject*), clearly labelled so it's obvious it goes in the Subject
   field, not the description body. Never write only the description — the title is required.
-- **Technical tickets:** If the ticket is technical (developer-facing, internal engineering
-  work — infrastructure, refactor, API, data migration, etc.), prefix the **title** with
-  `[TT] `. Non-technical / business tickets get no prefix.
+- **Technical tickets — ALWAYS ask, never decide yourself:** Ask me whether this is a technical
+  ticket (developer-facing, internal engineering work — infrastructure, refactor, API, data
+  migration, etc.) or not. You may say which you'd guess, but you must ask and let me confirm.
+  If I say technical, prefix the **title** with `[TT] `; non-technical / business tickets get no
+  prefix.
 - **Fill, don't leave placeholders:** Replace every `_italic placeholder_` with real content
   based on what the user told you. If you genuinely lack the information for a section, ask the
   user (one question at a time) rather than inventing facts. Drop sections only when the
   template says they are optional and the user has nothing to add (e.g. *Testing Scenarios*).
+- **Ask when anything is unclear:** Prefer asking over guessing. Whenever the request is
+  ambiguous or incomplete, ask clarifying questions (one at a time, each with a recommendation)
+  before writing. It's better to ask a few questions than to invent details.
+- **Confirm the user story BEFORE writing the full ticket:** Don't write the whole ticket in
+  one shot. First propose your best-guess *user-story sentence* (see *User story* below) as an
+  assumption, and ASK me whether I agree or want it different. Only after I've confirmed the
+  user story do you write out the rest of the ticket.
 - **Problem first (bugs & tasks):** For **bug** and **task** tickets, keep the *problem* in the
   foreground — describe what is wrong or what is needed and why it matters (the impact), not how
   to fix it. You MAY suggest a possible solution, but clearly mark it as a suggestion and state
@@ -53,9 +62,12 @@ allowed locally as the "no real ticket" marker in a `notes-local/` folder name
   the ticket as if a particular implementation is already decided. (Features may describe the
   expected behaviour in more detail, since that defines the feature.)
 
-## Picking the template
+## Picking the category (ALWAYS ask — never decide yourself)
 
-Ask the user which type if it is not obvious from their description:
+ALWAYS ask the user which category the ticket is before writing it — **Bug**, **Feature**,
+**Task**, or another type they name. Do NOT decide the category yourself, even if it seems
+obvious from their description. You may state which one you'd guess, but you must still ask and
+let the user confirm or correct it before proceeding.
 
 - **Feature** — new capability or enhancement.
 - **Bug** — something is broken / behaves wrong. Push for more reproduction detail in
@@ -64,6 +76,22 @@ Ask the user which type if it is not obvious from their description:
 
 All three share the same section structure below. The only practical difference is emphasis:
 bugs need strong reproduction detail in AS-IS-STATE.
+
+## User story
+
+Write the User Story / Description as a single sentence in this structure:
+
+> **As a** _(the user role)_ — who needs this (e.g. customer, admin, guest).
+> **I want to** _(the action)_ — the specific capability or behaviour they want.
+> **So that** _(the value)_ — the underlying goal, reason, or business value.
+
+Example — *As a registered user, I want to reset my password via an email link so that I can
+regain access to my account if I forget my password.*
+
+Remember the workflow rule above: propose this sentence first as your best guess and get my
+agreement on it BEFORE writing the full ticket. For a bug or task where a user-story sentence
+doesn't fit naturally, say so and offer to phrase the core problem / acceptance criteria
+instead — still confirm the framing with me first.
 
 ## Template
 
@@ -74,7 +102,7 @@ bugs need strong reproduction detail in AS-IS-STATE.
 
 #### User Story / Description
 
-As a user I ...
+As a _(user role)_, I want to _(action)_ so that _(value)_.
 
 ---
 
