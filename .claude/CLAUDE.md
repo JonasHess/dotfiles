@@ -79,6 +79,17 @@
   for a different ticket, `main`/`master` when I'd expect a working branch) or that
   the branch is behind its remote, STOP and warn me before continuing. Let me decide
   whether to switch or pull.
+- **Working with tags is high-risk — be extra careful.** When creating a branch from a tag,
+  moving/re-pointing a tag, or anything else involving tags:
+  - Make sure we're on the up-to-date state from origin first (`git fetch --tags` / check
+    against origin) — never act on a stale local view of tags or branches.
+  - Never delete, move, or overwrite other tags by accident. Touch only the exact tag we
+    agreed on; double-check the tag name and target commit before acting.
+  - Be aware that tags (and pushes) can trigger CI/CD pipelines. If there's any chance an
+    action triggers a pipeline, ASK me first and WAIT for my decision — don't risk it.
+  - NEVER push tags or branches yourself. Prepare the change locally, show me the exact
+    commands, and either ask me to run the push or wait for my explicit approval. This is a
+    per-action approval (see Safety) — a previous OK never carries over.
 
 ## Cross-repo context
 - My repos live under `~/repos/<name>` OR `~/IdeaProjects/<name>`, depending on the machine
