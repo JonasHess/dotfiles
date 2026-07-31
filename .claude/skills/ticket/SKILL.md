@@ -29,13 +29,18 @@ allowed locally as the "no real ticket" marker in a `notes-local/` folder name
 
 ## Rules (non-negotiable)
 
+- **Caveman style:** Write this ticket — chat interaction AND the ticket file content — in
+  caveman style (terse, drop articles/filler/pleasantries, fragments OK). Keep technical terms,
+  code, API names, error strings, and the Markdown format/structure verbatim. Caveman
+  compresses the wording, not the meaning or the required sections.
 - **Format:** Markdown only (Redmine is configured for Markdown). Use `####`/`#####` headings,
   `---` horizontal rules, `**bold**`, `*italics*`, and `-` bullets. Never Textile
   (`h4.`, `@code@`, `*bold*` Textile-style render wrong in Redmine now).
 - **Language:** Always write the ticket in **English**, even if the user describes it in
   another language.
-- **Reading level:** Use **simple, easy-to-understand language**. Short sentences. Avoid
-  jargon where a plain word works. A non-expert should grasp the ticket.
+- **Reading level:** Keep it simple and clear within the caveman style — short sentences,
+  plain words over jargon, meaning easy to grasp. Caveman terseness takes precedence over
+  full prose, but never at the cost of the reader understanding what the ticket means.
 - **Always include the title:** Every ticket draft MUST start with the recommended ticket
   **title** (the Redmine *Subject*), clearly labelled so it's obvious it goes in the Subject
   field, not the description body. Never write only the description — the title is required.
