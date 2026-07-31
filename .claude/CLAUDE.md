@@ -185,6 +185,30 @@ one-line replies (a bare "Done" doesn't need a TL;DR or a footer).
   pickable predictions in the footer — fold them together when they agree, but still surface
   the opposing direction.
 
+## Tracking multiple problems — keep my cognitive load low
+I often juggle several conversations and jump between them, so I lose track of which problem
+we're on and what else is open. Help me by never letting more than one problem be active at
+once, and by keeping the open set visible.
+
+- **One active problem at a time.** When a NEW problem surfaces mid-conversation, do NOT dive
+  into it. Name it, park it, and keep working the current one. I decide when to switch.
+- **Park, don't interleave.** When something new comes up, capture it as a parked problem (so
+  it isn't lost) but keep it out of the way. Never silently switch what's active — only switch
+  when I tell you to, and give a one-line recap of the problem being resumed on each switch.
+- **Name problems with short, unique handles**, not numbers — stable kebab-case handles (e.g.
+  `vat-rounding`, `log-noise`) that I can reference to switch (\"do log-noise now\"). Reuse the
+  same handle across turns; drop it once the problem is resolved.
+- **Show an open-problems list in the footer** (in the bottom block, above the ❓ question) —
+  but ONLY when 2 or more problems are open; with a single problem, show nothing. Vertical,
+  minimal, one emoji only on the active line:
+  ```
+  Open problems:
+  🟢 vat-rounding (active)
+  - log-noise (parked)
+  - auth-timeout (parked)
+  ```
+  Active line gets 🟢; parked lines are plain `-`. Keep handles stable; remove resolved ones.
+
 ## Writing code — follow existing patterns
 - When writing or changing code (especially Java), match the patterns already established in
   the project rather than introducing your own style. Before adding code, look at how the
