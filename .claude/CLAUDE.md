@@ -210,15 +210,60 @@ one-line replies (a bare "Done" doesn't need a TL;DR or a footer).
   rather than guessing. When something in the code contradicts the spec, flag it.
 
 ## Code comments
-- Comments must describe the current state of the code, not its history. Never explain how
-  something used to be done or what changed ("previously…", "now we…", "renamed from…").
-- Don't write comments as if work is still in progress ("TODO: still need to…", "for now…",
-  "temporary"). Write them as a clear description of how the code works as it stands.
-- Keep comments helpful and clear — explain intent and non-obvious "why", not the obvious.
-- Don't reference other files/documents in comments unless you're certain those files are
-  committed together with the code. Working notes and scratch files are often temporary and
-  won't exist later, so a comment pointing at them becomes a dangling reference. Files in a
-  `notes-local/` directory in particular are NEVER committed — never reference them from code.
+
+**Before writing one**
+
+- Prefer clearer code to a comment. If you are about to explain a block, first try extracting it into
+  a well-named function. A comment is often an apology for code that could have spoken for itself.
+- Every comment is a maintenance liability. Fewer, better ones beat thorough ones.
+
+**What to write**
+
+- Write for a reader who has only the code: no ticket, no specification, no chat history, no notes.
+  If a comment only makes sense with one of those open, it is not doing its job.
+- Capture what the types cannot express — units, ranges, invariants, ownership, thread-safety,
+  nullability, what happens on failure. This is the highest-value comment there is.
+- Document the surprising: workarounds, non-obvious ordering requirements, deliberate deviations from
+  the approach a reader would expect. Anyone who might "fix" the code needs to know why it is like
+  that.
+- Justify every tolerance, guess and deviation, including its cost. When code accepts something
+  non-conformant or infers a value, say what it accepts, why, and what is given up in exchange.
+- Aim at the next decision, not the last one. The reader's question is almost always "may I change
+  this?", so write what would break.
+- Describe the current state of the code, not its history. Never explain how something used to be
+  done or what changed ("previously…", "now we…", "renamed from…"), and don't write comments as if
+  work is still in progress ("TODO: still need to…", "for now…", "temporary").
+
+**Reasons versus references**
+
+- Never let an external artefact be the reason. Citing a ticket, a review, a document or a person is
+  an appeal to authority, not an explanation. State the durable fact: what is true about the data, the
+  format or the domain that makes this code correct.
+- When a standard justifies the code, state its rule, not its name. A reader can act on a rule; a
+  document reference only tells them where to go looking.
+- Then link freely. A ticket number, spec section or reference for a gnarly workaround is cheap and
+  saves hours — as a supplement to the explanation, never as a substitute for it. Only link artefacts
+  that live with the code; never point at working notes or scratch files (a `notes-local/` path is
+  NEVER committed, so a comment referencing it is always a dangling reference).
+- Apply the removal test. Delete every reference from the comment. If what remains is still true and
+  still explains the code, the comment rests on the right thing. If it becomes meaningless, it does
+  not.
+
+**Where the comment belongs**
+
+- Comment at the altitude of the code you are in. A comment belongs to its unit, not to the system.
+- Separate the contract from the implementation. Interface and public documentation describe what
+  callers can rely on; inline comments describe how it is achieved, for maintainers. Do not leak
+  implementation detail into a contract.
+- In a generic, abstract or shared type, describe only what any implementation must provide. Naming
+  what one concrete implementation happens to do leaks detail upward, dates the comment as soon as a
+  second implementation appears, and turns the abstraction into documentation of its first user. The
+  same applies downward: a concrete class should not restate the contract its interface defines.
+
+**Upkeep**
+
+- A stale comment is worse than none, because people trust it. Change the comment in the same commit
+  as the code it describes.
 
 ## Writing text deliverables (tickets, emails, message replies, summaries, drafts…)
 - When I ask you to write any prose deliverable, ALWAYS write it to a file — never just
