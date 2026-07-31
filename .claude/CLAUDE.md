@@ -164,8 +164,10 @@ one-line replies (a bare "Done" doesn't need a TL;DR or a footer).
   - **Label options with a unique per-question prefix**, NOT bare `1./2.`. Each question gets
     its own letter, and options are `<Letter><number>` — `A1`, `A2`, `A3` for one question,
     `B1`, `B2` for the next, then `C1`… Advance the letter on every new question (look at the
-    letter you used last and increment; wrap `Z`→`A`). This way when I answer with a code like
-    `B2` it's unambiguous which question I'm answering — bare numbers get confused across
+    letter you used last and increment; wrap around after the last usable letter). **Skip
+    letters that are easy to confuse** with digits or each other — at least `I` (looks like 1)
+    and `O` (looks like 0); prefer clearly distinct letters. This way when I answer with a code
+    like `B2` it's unambiguous which question I'm answering — bare numbers get confused across
     turns. Example:
     ```
     ❓ **Commit it now?**
@@ -182,6 +184,30 @@ one-line replies (a bare "Done" doesn't need a TL;DR or a footer).
   response ends with a real decision, keep that recommendation in the prose *and* give the
   pickable predictions in the footer — fold them together when they agree, but still surface
   the opposing direction.
+
+## Writing code — follow existing patterns
+- When writing or changing code (especially Java), match the patterns already established in
+  the project rather than introducing your own style. Before adding code, look at how the
+  surrounding code and similar existing classes do it, and follow that.
+- Concretely, mirror the project's conventions for: logging (which logger/framework, how
+  loggers are declared, log levels and message style), class/interface/method/variable naming,
+  package structure and where new classes go, error/exception handling, dependency injection,
+  test structure, formatting, and use of existing helpers/utilities instead of reinventing them.
+- Prefer reusing existing abstractions and utilities over writing new ones. If the established
+  pattern seems wrong or you think a different approach is clearly better, say so and ask before
+  diverging — don't silently introduce an inconsistent style.
+
+## Working from a specification
+- When the task involves something that has an official, well-defined specification — a file or
+  message format like EDIFACT, Tradacoms, EANCOM, ISO 20022, X12, etc., or any formal
+  standard — make sure you have actually READ the relevant part of the official spec document
+  before implementing. Do not rely purely on memory or on what the existing code seems to do
+  (memory can be wrong, and existing code may be buggy or incomplete).
+- Cross-check against the spec repeatedly as you work — verify field definitions, segment
+  order, cardinalities, allowed values, edge cases, etc. against the authoritative document,
+  not against assumptions.
+- If you don't have the spec (or the specific version) available, say so and ask me for it
+  rather than guessing. When something in the code contradicts the spec, flag it.
 
 ## Code comments
 - Comments must describe the current state of the code, not its history. Never explain how
@@ -249,6 +275,10 @@ one-line replies (a bare "Done" doesn't need a TL;DR or a footer).
   Redmine MCP on your own, without being asked (this is a read, which is always allowed —
   only Redmine *writes* need my approval). Use it to ground the knowledgebase and your
   understanding, and refresh it if the ticket may have changed since you last looked.
+- Also actively download and read the ticket's attached files via the Redmine MCP (specs,
+  sample messages, screenshots, logs, documents) — don't skip them or assume their contents.
+  They often carry essential detail. Read the relevant ones to ground your understanding, and
+  note in the knowledgebase which attachments exist and what they contain.
 - It is YOUR responsibility to find an existing knowledgebase before starting work — don't
   wait for me to point you to it. As soon as a ticket comes up, search `notes-local/`
   across releases for a matching `#<ticket>-*` folder / `knowledgebase.md` (the ticket may
