@@ -124,6 +124,10 @@
   spell it out every time so the path is unambiguous and clickable.
 - Prefer test-driven development: write a failing test first, implement to green, then
   run the regression suite.
+- When referring to a Merge Request, identify it by its **full title** and the **tickets and
+  branches it touches** (source → target branch, related ticket number) — that's what matters
+  to me. The MR's numeric ID is mostly irrelevant: you may include it, but never use the bare
+  ID as the primary way to refer to an MR.
 - Never ask me more than one question at once.
 - When you ask me a question, always give a recommendation: put the recommended option
   first marked "(Recommended)", with a confidence % (~90% = very confident it's right,
