@@ -238,6 +238,34 @@ once, and by keeping the open set visible.
   pattern seems wrong or you think a different approach is clearly better, say so and ask before
   diverging — don't silently introduce an inconsistent style.
 
+## Source files: don't introduce stray characters by accident
+
+Don't let accidental non-ASCII creep into code or comments. The typical mistakes are
+lookalike substitutions — em-dashes for `--`, curly quotes for `'`/`"`, arrows, non-breaking
+spaces — and, worse, invisible characters like a NUL byte (`0x00`) or a zero-width space
+landing inside a string literal. The invisible case is dangerous because reading the file back
+does NOT catch it: it renders as nothing or as the character you meant. One reached a merge
+request already (a NUL where a space was intended). Default to plain ASCII so these can't slip
+in unnoticed.
+
+This is about avoiding *accidents*, not banning non-ASCII. Deliberate, legitimate non-ASCII is
+fine — an i18n/translation string, a file that already uses it, content that genuinely needs
+it. Match the surrounding file. When a non-ASCII character is intentional but could look like a
+mistake, prefer an escape (e.g. `—`) so it's visible in the source.
+
+Run this check right after you write or edit a source file — not at commit time. I often do the
+commit myself, so don't defer the check to a commit that may never be yours to make. Whenever
+there's a real chance a stray or invisible character got in (string literals you typed,
+copy-pasted text, anything you can't fully trust from reading it back), verify the bytes rather
+than trusting your eyes:
+
+```bash
+python3 -c "d=open('FILE','rb').read(); print('NUL', d.count(b'\x00'), 'non-ASCII', sum(1 for b in d if b>127))"
+```
+
+Investigate any NUL, and any non-ASCII you didn't intend, as soon as the check flags it — right
+after writing, not later.
+
 ## Working from a specification
 - When the task involves something that has an official, well-defined specification — a file or
   message format like EDIFACT, Tradacoms, EANCOM, ISO 20022, X12, etc., or any formal
