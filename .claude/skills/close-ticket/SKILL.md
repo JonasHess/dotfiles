@@ -29,6 +29,31 @@ Base the comment on what actually happened, not guesses. Pull from:
 If you lack a fact needed for a section (e.g. the root cause), ask the user (one question at a
 time) rather than inventing it.
 
+## First: is the ticket actually solved?
+
+Before writing any closing comment, evaluate whether the ticket is really done. Do NOT jump
+straight to the draft.
+
+1. List everything the ticket requires - each requirement, acceptance criterion, or task the
+   ticket calls for - as a checklist, one item per line.
+2. Mark each item with an emoji status: ✅ for done, ❌ for not done yet (use ⚠️ for partially
+   done / uncertain, and say why). Base this on the conversation, git context, and the ticket
+   itself, not on optimism.
+3. Show me this checklist so the state is obvious at a glance.
+4. Then ASK me whether to generate the closing comment. Do not write it unless I say yes - if
+   items are still open (❌), point that out and let me decide whether to close anyway.
+
+Example:
+
+```
+Ticket completion:
+✅ Split-invoice rounding fixed
+✅ Regression test added
+❌ Documentation updated
+```
+
+Only after I confirm do you move on to writing the closing comment below.
+
 ## Rules (non-negotiable)
 
 - **Format:** Markdown only (Redmine is configured for Markdown). Use `####`/`#####` headings,
@@ -43,8 +68,13 @@ time) rather than inventing it.
   *Follow-Ups / Not Done* — even if the user didn't ask. List the concrete follow-ups you'd
   create and let the user pick which ones (or none). See *Offer follow-up tickets* below.
 - **Fill, don't leave placeholders:** Replace every `_italic placeholder_` with real content.
-  Drop a section only when it genuinely doesn't apply (e.g. *Root Cause* for a pure feature) —
+  Drop a section only when it genuinely doesn't apply (e.g. *Root Cause* for a pure feature) -
   don't leave an empty heading.
+- **Update the knowledgebase:** After drafting the closing comment, update the ticket's
+  `knowledgebase.md` (see the global "Ticket knowledgebase" rules) so it reflects the final
+  state - solution, what changed, completion status, and any follow-ups left. It should be
+  accurate for a future conversation that reopens this ticket. Skip only for the `#24466`
+  no-real-ticket marker, which has no knowledgebase.
 
 ## Template
 
