@@ -60,8 +60,12 @@ Only after I confirm do you move on to writing the closing comment below.
   `---` horizontal rules, `**bold**`, `*italics*`, `` `inline code` ``, `-` bullets, and fenced
   `` ``` `` code blocks. Never Textile (`h4.`, `@code@`, `<pre>` render wrong in Redmine now).
 - **Language:** Always write in **English**, even if the user describes it in another language.
-- **Reading level:** Use **simple, easy-to-understand language**. Short sentences. Explain the
-  "why", not just the "what". Someone who didn't do the work should understand it.
+- **Short and to the point - no AI slop:** The whole comment should fit on one screen. Prefer
+  short bullets and fragments over sentences; one line per point. Keep each section to roughly
+  1-3 lines. Explain the "why" in as few words as it takes. Cut all filler ("in order to", "it
+  is worth noting", "this ensures that", "as mentioned"), do not restate the ticket, no praise,
+  no meta-commentary. Someone who didn't do the work should still understand it - clarity through
+  brevity, not volume.
 - **Be honest about what's left:** Always state follow-ups / not-done / known limitations.
 - **Always offer follow-up tickets:** After writing the closing comment, ALWAYS offer to draft a
   Redmine ticket (via the `ticket` skill) for each follow-up task / open issue you listed in
@@ -70,6 +74,21 @@ Only after I confirm do you move on to writing the closing comment below.
 - **Fill, don't leave placeholders:** Replace every `_italic placeholder_` with real content.
   Drop a section only when it genuinely doesn't apply (e.g. *Root Cause* for a pure feature) -
   don't leave an empty heading.
+- **Never self-reference the ticket:** The comment lives on the ticket, so don't link or
+  mention the ticket's own number in it (a comment on `#44625` must not contain `#44625` or a
+  link to it). Reference OTHER tickets when relevant, never the current one.
+- **Offer to upload referenced files:** If the closing comment refers to a specific file (a test
+  file, sample message, log, screenshot, export, etc.), list each one once after the draft with
+  its **full absolute path**, and OFFER to upload it to the Redmine ticket for me. Let me pick
+  which to upload (or none). Redmine renders no file from a path alone - it must be attached.
+  Uploading uses the raw REST API (the Redmine MCP has no upload tool) - see the
+  `redmine-attach-file-via-rest` memory for the exact two-step flow and safety procedure. Each
+  upload is a Redmine WRITE and needs its own fresh explicit approval every time (uploading the
+  bytes is safe; attaching to the issue is the write). Follow the memory's safety steps: snapshot
+  the issue first, put ONLY `uploads` in the PUT body, diff after, verify the sha. Pick the file
+  by reading the ticket, not guessing from its number; never print the API key. Real supplier
+  files carry real account/invoice numbers - attaching one publishes them to everyone who can
+  read the ticket, so say so explicitly before uploading.
 - **Update the knowledgebase:** After drafting the closing comment, update the ticket's
   `knowledgebase.md` (see the global "Ticket knowledgebase" rules) so it reflects the final
   state - solution, what changed, completion status, and any follow-ups left. It should be
@@ -78,35 +97,32 @@ Only after I confirm do you move on to writing the closing comment below.
 
 ## Template
 
+Keep it lean. One line per point. Drop any section that doesn't apply (don't leave an empty
+heading). Example of the target length:
+
 ```
 #### Solution
-
-_one or two sentences: what was done to resolve this ticket._
-
----
+Cent rounding on split invoices fixed.
 
 #### Root Cause
+Rounded per-line, not per-invoice. `a1b2c3d`
 
-_for bugs: why it actually happened — the underlying cause, not just the symptom. Omit this section for pure features/tasks._
+#### Changed
+- Round total once (`InvoiceCalc`) `a1b2c3d`
+- Regression test `e4f5g6h`
 
----
-
-#### What Was Changed
-
-_explain the fix / implementation in plain language: what changed and where (which component / repo / file), and why that resolves the issue. Quote the relevant commits / PRs / branches._
-
----
-
-#### Follow-Ups / Not Done
-
-_anything left out of scope on purpose, known limitations, or follow-up work that should become its own ticket. Write "None." if everything is finished._
-
----
-
-#### How To Verify
-
-_steps to confirm it works: what was tested, in which environment, and the expected result. Optional but recommended._
+#### Follow-Ups
+- None
 ```
+
+Section guide (all terse):
+
+- **Solution** - one line: what resolved the ticket.
+- **Root Cause** - bugs only, one line: the underlying cause. Omit for features/tasks.
+- **Changed** - bullets: what changed and where (component/file), each with its commit/PR/branch
+  ref. No prose paragraphs.
+- **Follow-Ups** - bullets of what's left out on purpose / known limits, or `- None`.
+- **How To Verify** - optional; include only if useful, as short bullets.
 
 ## Output
 
