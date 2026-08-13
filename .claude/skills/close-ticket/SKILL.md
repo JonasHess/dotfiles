@@ -21,10 +21,12 @@ Base the comment on what actually happened, not guesses. Pull from:
 - The current conversation (what was diagnosed and changed).
 - Git context when relevant: recent commits, the branch diff, PR description
   (e.g. `git log --oneline`, `git diff`). Reference concrete commits / PRs / branches.
-- The ticket itself — if a ticket number is known, you may read it for context with the Redmine
-  MCP `get_issue` (read-only is fine). To place the file in the right release folder, look up the
-  ticket's Zielversion (the MCP omits it — use the raw REST API, see the
-  `redmine-zielversion-lookup` memory).
+- The ticket itself - ALWAYS re-read it fresh from Redmine (`get_issue`, read-only) at the start,
+  even if you think you already know it. It may have changed (new comments, status, requirements)
+  since you last looked, and the closing comment must reflect the current state. Refresh the
+  knowledgebase from this too. To place the file in the right release folder, look up the ticket's
+  Zielversion (the MCP omits it - use the raw REST API, see the `redmine-zielversion-lookup`
+  memory).
 
 If you lack a fact needed for a section (e.g. the root cause), ask the user (one question at a
 time) rather than inventing it.
