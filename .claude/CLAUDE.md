@@ -377,6 +377,10 @@ after writing, not later.
 - Create it as soon as we start on a ticket if it doesn't exist yet. From then on, keep it
   updated **on your own, without being asked** - refresh it along the way as you learn
   things, make decisions, or change the plan. Don't wait until the end.
+- **NEVER ask me whether to update the knowledgebase.** The answer is always yes. You own the
+  knowledgebase and are responsible for keeping it current - just update it, silently, as a
+  matter of course. Asking is wrong; only the actual content going into Redmine ever needs my
+  approval, never your working notes.
 - This file is the key reference for starting NEW conversations on the same ticket. Write
   it so a future Claude with no memory of this session can get up to speed fast. It should
   work as an **index**: point to the relevant code (full paths + symbols), other
