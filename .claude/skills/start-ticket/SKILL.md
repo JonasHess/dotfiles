@@ -35,13 +35,20 @@ no-real-ticket marker is not a real ticket; if that's all there is, this skill d
 
 4. **Confirm the repo and base, then create a feature branch.** Creating a branch is a git
    action that needs my explicit OK (global git rules) - so:
-   - Confirm which repo we're working in and that it's on the up-to-date base from origin
-     (`git fetch`, check the branch isn't stale). If a server is unreachable, it's probably the
-     VPN - stop and tell me.
+   - Confirm which repo we're working in. Always branch off the up-to-date `origin/master`
+     (`git fetch` first so it isn't stale), even for hotfix-related tickets - hotfix releases
+     are made by hand by cherry-picking the relevant commits, so the feature branch still starts
+     from `origin/master`. Only branch off something else if I explicitly say so. If a server is
+     unreachable, it's probably the VPN - stop and tell me.
    - Look at the repo's existing branch naming (`git branch -a`) and propose a branch name that
      matches that convention, tied to this ticket (e.g. `<user>/<ticket>_<slug>`).
-   - Show me the exact `git checkout -b ...` command and ASK before running it. Do not create,
-     switch, or push the branch until I approve. Never push.
+   - Show me the exact command (`git fetch` then
+     `git checkout -b <name> --no-track origin/master`) and ASK before running it. Use
+     `--no-track`: branching off a remote-tracking branch would otherwise set the new branch's
+     upstream to `origin/master`, which makes tools (e.g. IntelliJ) default the push target to
+     master - risking an accidental push of feature commits to master. `--no-track` leaves the
+     branch with no upstream, so the first push creates a new `origin/<name>` instead. Do not
+     create, switch, or push the branch until I approve. Never push.
 
 5. **Create the knowledgebase.** Create `knowledgebase.md` in the ticket folder (see *Output*),
    grounded in everything above. From here on keep it updated on your own per the global rules.
