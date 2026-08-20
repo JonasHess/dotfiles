@@ -132,7 +132,8 @@ Follow the global "Writing text deliverables" rules:
 
 1. Write the comment to a file with the **`.md`** extension — never just print it in chat.
 2. Location: `<repo-root>/notes-local/<release>/#<ticket>-<slug>/closing-comment.md`, e.g.
-   `notes-local/release 3.19/#43992-observability/closing-comment.md`. Place it in the
+   `notes-local/release_3.19/#43992-observability/closing-comment.md` (never use whitespace in
+   these paths - use `_`). Place it in the
    ticket's existing folder if one exists. If you don't know the release, look it up via the
    Zielversion lookup, or ask the user. When there is no real ticket number, use
    `#24466-<slug>` (the local "no real ticket" marker). The file gets a plain name — don't

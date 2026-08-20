@@ -346,9 +346,13 @@ after writing, not later.
   emails; Redmine tickets are Markdown, so `.md`). Inside a repo, default to `<repo-root>/notes-local/`.
 - Organize `notes-local/` by release, then by ticket:
   `notes-local/<release>/#<ticket>-<slug>/<files>`, e.g.
-  `notes-local/release 3.18/#43134-mixed-vat/assessment.md`.
-  - `<release>` is the top-level folder (e.g. `release 3.18`). If I haven't told you the
-    release and you can't infer it, ASK me which release before creating the folder.
+  `notes-local/release_3.18/#43134-mixed-vat/assessment.md`.
+  - **Never use whitespace anywhere in these paths** (folders or files). Use `_` instead, so I
+    can copy a path in the terminal without escaping. E.g. `release_3.18`, not `release 3.18`.
+  - `<release>` is the top-level folder (e.g. `release_3.18`). Use only the minor version
+    (`major.minor`), never a hotfix/patch component: a ticket in `3.19.2` goes under
+    `release_3.19`, not `release_3.19.2`. If I haven't told you the release and you can't infer
+    it, ASK me which release before creating the folder.
   - The ticket folder is `#<ticket>-<slug>` (`#` + ticket number + 2–4 word slug). Three cases:
     - **Known ticket number:** use it, e.g. `#43134-mixed-vat`.
     - **Drafting a NEW ticket whose number isn't known yet:** use `#NEW-<slug>` (e.g.

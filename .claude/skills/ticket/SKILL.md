@@ -165,7 +165,8 @@ Follow the global "Writing text deliverables" rules:
 
 1. Write the ticket to a file with the **`.md`** extension — never just print it in chat.
 2. Location: `<repo-root>/notes-local/<release>/#<ticket>-<slug>/`, e.g.
-   `notes-local/release 3.18/#43134-mixed-vat/ticket.md`. If you don't know the release,
+   `notes-local/release_3.18/#43134-mixed-vat/ticket.md` (never use whitespace in these paths -
+   use `_`). If you don't know the release,
    ask the user before creating the folder. Since a freshly drafted ticket has no number yet,
    use `#NEW-<slug>` (e.g. `#NEW-mixed-vat/`) and remind the user you don't know the number;
    rename the folder once they give you the real number. (`#24466-<slug>` is only for
