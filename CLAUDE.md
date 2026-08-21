@@ -12,7 +12,7 @@ Repo: github.com/JonasHess/dotfiles.
 
 ## Layout
 - Shell: `.zshrc`, `.oh-my-zsh/`, `.p10k.zsh`, `.tmux.conf` (+ `.tmux.conf.local`).
-- Editors: `.nvimrc` + `.config/nvim` (AstroNvim), `.ideavimrc`.
+- Editors: `.config/nvim` (LazyVim, based on the LazyVim starter), `.ideavimrc`.
 - macOS window mgmt: `.config/{yabai,skhd,sketchybar,rectangle}`.
 - Other tools: `.config/{k9s,lazygit,gh,ranger,alacritty,htop}`, `.osx` (macOS `defaults`).
 - Claude Code global config: `.claude/CLAUDE.md`, stowed to `~/.claude/CLAUDE.md`.
