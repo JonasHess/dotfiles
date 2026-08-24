@@ -29,18 +29,24 @@ allowed locally as the "no real ticket" marker in a `notes-local/` folder name
 
 ## Rules (non-negotiable)
 
-- **Caveman style:** Write this ticket — chat interaction AND the ticket file content — in
-  caveman style (terse, drop articles/filler/pleasantries, fragments OK). Keep technical terms,
-  code, API names, error strings, and the Markdown format/structure verbatim. Caveman
-  compresses the wording, not the meaning or the required sections.
+- **Lean, no AI slop:** The whole ticket should fit on one screen. Short sentences and bullets,
+  one point per line. Cut filler ("this ticket aims to", "in order to", "it is worth noting"),
+  never restate the title, no meta-commentary, no padding. Teammates read these and complain
+  when they are long and bloated - keep it tight.
+- **Say each fact once:** Do not repeat the same information across sections. If the user story
+  already carries the role and the value, don't restate them in *Actors* or *Customer Impact*.
+  Repetition is what reads as slop.
+- **Omit redundant or empty sections:** Include a section only when it adds concrete new info.
+  A thin or restating section is worse than no section - drop it. Only *Description*, *AS-IS*
+  (bugs), *TO-BE / Acceptance Criteria*, and *Priority* are always present; the rest are
+  optional (see the template).
+- **Normal professional English:** Write the ticket content in plain, clear English (NOT the
+  caveman chat style) - teammates read it. Terse and lean, but full words and readable.
 - **Format:** Markdown only (Redmine is configured for Markdown). Use `####`/`#####` headings,
   `---` horizontal rules, `**bold**`, `*italics*`, and `-` bullets. Never Textile
   (`h4.`, `@code@`, `*bold*` Textile-style render wrong in Redmine now).
 - **Language:** Always write the ticket in **English**, even if the user describes it in
   another language.
-- **Reading level:** Keep it simple and clear within the caveman style — short sentences,
-  plain words over jargon, meaning easy to grasp. Caveman terseness takes precedence over
-  full prose, but never at the cost of the reader understanding what the ticket means.
 - **Always include the title:** Every ticket draft MUST start with the recommended ticket
   **title** (the Redmine *Subject*), clearly labelled so it's obvious it goes in the Subject
   field, not the description body. Never write only the description — the title is required.
@@ -104,59 +110,41 @@ instead — still confirm the framing with me first.
 
 ## Template
 
+Two parts: the **core** (always present) and **optional** sections (include only when they add
+concrete info not already stated). Keep every part short - bullets over paragraphs.
+
+### Core (always)
+
 ```
-**Title (Redmine Subject):** <recommended ticket title — prefix with `[TT] ` if technical>
+**Title (Redmine Subject):** <title - prefix with `[TT] ` if technical>
 
----
+#### Description
+_one line. feature: `As a (role), I want to (action) so that (value).` bug/task: the problem in one sentence._
 
-#### User Story / Description
+#### AS-IS
+_bugs: concrete repro detail (examples, links, mailboxes, steps). omit for a pure feature with no current behaviour._
 
-As a _(user role)_, I want to _(action)_ so that _(value)_.
-
----
-
-#### AS-IS-STATE
-
-_describe the current situation as best as possible, including any examples, links and mailboxes if available._
-_(bugs: give as much specific detail as possible so the issue can be reproduced.)_
-
----
-
-#### TO-BE-STATE
-
-_describe the expected outcome — the problem solved / what is needed. for bugs and tasks, state the desired result, not a prescribed implementation. if there are official specifications (e.g. a trading format like Tradacoms), quote the specific section and ideally add a link to those specifications._
-
-##### Possible Solution (suggestion only)
-
-_optional, bugs & tasks: a suggested approach if you have one. Make clear this is only a suggestion — the person working the ticket decides how to actually solve it. Omit if you have no suggestion._
-
-##### Acceptance Criteria
-
-_define the conditions that must be met for this ticket to be considered complete and accepted._
-
----
+#### TO-BE / Acceptance Criteria
+_the expected result AND the conditions to consider it done, as short bullets. state the result, not a prescribed implementation. if an official spec applies (e.g. Tradacoms), quote the exact section + link once._
 
 #### Priority
+_low | medium | high_
+```
 
-_low, medium, or high_
+### Optional (add ONLY if it adds new info, else omit the heading entirely)
 
----
+```
+#### Possible Solution
+_bugs/tasks only: a suggested approach, clearly marked a suggestion - the person working it decides. omit if none._
 
 #### Customer Impact
-
-_short summary of the customer impact. Can be reused for Release Notes._
-
----
+_only if it adds something the user story's "so that" didn't already say. reusable for Release Notes._
 
 #### Actors
-
-_internal or external. if external, note retailer- or supplier-based, and if it is a specific customer rather than a group, the customer name._
-
----
+_only if non-obvious from the user story: internal/external; retailer- or supplier-based; specific customer name if one._
 
 #### Testing Scenarios
-
-_optional — only fill in if you want to specify testing instructions._
+_only if you have specific testing instructions worth stating._
 ```
 
 ## Output
