@@ -57,6 +57,18 @@
   time. Before committing, look at existing commits (`git log`, or `git log --grep "#<ticket>"`
   for ticketed repos) and reuse the same label verbatim. Only change it for a good reason (the
   wording is wrong or misleading), and say why when you do.
+- **Catch-all bucket tickets (pubx) - prefer these over `#24466`.** For small work in pubx that
+  doesn't warrant its own ticket, use the matching standing pubx ticket in the commit ref
+  instead of `#24466`. Pick by what the work is:
+  - `#44597` - documentation changes
+  - `#42981` - typos in code
+  - `#44637` - fixing tests
+  - `#44677` - changes to the Homer app (our internal link/URL collection)
+  Use the ticketed format with that number and its stable label, e.g.
+  `Ref #42981 typos in code - fix spelling in InvoiceService`. These buckets are only for
+  commit refs: they do NOT get a per-ticket knowledgebase or `notes-local/` folder (treat them
+  like `#24466` for that). Fall back to `#24466` only when the work fits no bucket and truly
+  needs no ticket. Use `#24466` less than before.
 - Keep commit messages you generate to a single line (the subject only) - no body, no bullet
   list. Keep that line short and to the point (aim for ~72 characters); summarize, don't list
   every change. If a change feels too big for one short line, that's a signal to split it into
@@ -372,9 +384,10 @@ after writing, not later.
   the generated text itself - just write to that brief.
 
 ## Ticket knowledgebase (mandatory)
-- This whole section applies only to **real tickets**. `#24466` (the "no real ticket"
-  marker) is EXCLUDED - don't auto-search for or auto-create a knowledgebase for it. A
-  knowledgebase under `#24466-*` is only made if I explicitly ask.
+- This whole section applies only to **real, dedicated tickets**. EXCLUDED: `#24466` (the "no
+  real ticket" marker) and the pubx catch-all bucket tickets (`#44597`, `#42981`, `#44637`,
+  `#44677`) - don't auto-search or auto-create a knowledgebase for any of them; they only carry
+  commit refs. A knowledgebase for one is made only if I explicitly ask.
 - Whenever we work on a real ticket, you MUST keep a per-ticket knowledgebase as a Markdown
   file in `notes-local/`. Use the same layout as above:
   `notes-local/<release>/#<ticket>-<slug>/knowledgebase.md`.
