@@ -68,6 +68,13 @@ Only after I confirm do you move on to writing the closing comment below.
   is worth noting", "this ensures that", "as mentioned"), do not restate the ticket, no praise,
   no meta-commentary. Someone who didn't do the work should still understand it - clarity through
   brevity, not volume.
+- **Write for a tester / PM, not a developer:** The audience is testers and product managers, so
+  describe the outcome in plain, functional terms - what now works, what behaviour changed, what
+  they can check. Avoid developer jargon and internals. For a `[TT]` (technical) ticket you may be
+  a little more technical, but don't overdo it - still readable by a non-developer.
+- **Leave commit details out:** Do NOT include commit hashes, branch names, PR numbers, or file
+  paths unless it is absolutely necessary for the reader to understand or verify the outcome. A
+  tester/PM does not care which commit did it. Describe the change by its effect, not its code.
 - **Be honest about what's left:** Always state follow-ups / not-done / known limitations.
 - **Always offer follow-up tickets:** After writing the closing comment, ALWAYS offer to draft a
   Redmine ticket (via the `ticket` skill) for each follow-up task / open issue you listed in
@@ -104,14 +111,17 @@ heading). Example of the target length:
 
 ```
 #### Solution
-Cent rounding on split invoices fixed.
+Split invoices now round to the correct cent amount.
 
 #### Root Cause
-Rounded per-line, not per-invoice. `a1b2c3d`
+The total was rounded on each line separately instead of once on the whole invoice.
 
-#### Changed
-- Round total once (`InvoiceCalc`) `a1b2c3d`
-- Regression test `e4f5g6h`
+#### What Changed
+- Invoice totals now round once, so split invoices match the expected amount.
+- Added an automated test covering split-invoice rounding.
+
+#### How To Verify
+- Create an invoice that splits across several lines and check the total is correct to the cent.
 
 #### Follow-Ups
 - None
@@ -119,12 +129,13 @@ Rounded per-line, not per-invoice. `a1b2c3d`
 
 Section guide (all terse):
 
-- **Solution** - one line: what resolved the ticket.
-- **Root Cause** - bugs only, one line: the underlying cause. Omit for features/tasks.
-- **Changed** - bullets: what changed and where (component/file), each with its commit/PR/branch
-  ref. No prose paragraphs.
+- **Solution** - one line: what now works, in plain outcome terms.
+- **Root Cause** - bugs only, one line: the underlying cause in plain language. Omit for
+  features/tasks.
+- **What Changed** - bullets describing the change by its effect (what behaves differently now),
+  NOT by commit/file. No commit hashes/branches unless truly needed.
+- **How To Verify** - steps a tester can actually follow to confirm it. Recommended.
 - **Follow-Ups** - bullets of what's left out on purpose / known limits, or `- None`.
-- **How To Verify** - optional; include only if useful, as short bullets.
 
 ## Output
 
