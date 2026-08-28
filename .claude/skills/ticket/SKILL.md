@@ -72,10 +72,14 @@ allowed locally as the "no real ticket" marker in a `notes-local/` folder name
   clear reference beats the same ticket sprinkled everywhere.
 - **Problem first (bugs & tasks):** For **bug** and **task** tickets, keep the *problem* in the
   foreground — describe what is wrong or what is needed and why it matters (the impact), not how
-  to fix it. You MAY suggest a possible solution, but clearly mark it as a suggestion and state
-  that the final decision on how to solve it is left to whoever picks up the ticket. Never write
-  the ticket as if a particular implementation is already decided. (Features may describe the
-  expected behaviour in more detail, since that defines the feature.)
+  to fix it. Never write the ticket as if a particular implementation is already decided.
+  (Features may describe the expected behaviour in more detail, since that defines the feature.)
+- **Never add a Possible Solution on your own - ASK first, default off.** How a ticket will be
+  solved usually does NOT belong in the ticket. So do not include a *Possible Solution* section
+  automatically. Each time, ASK me whether to include one: briefly tell me the solution you'd
+  suggest and why, and let me choose to add it or leave it off. Only propose one at all when you
+  are genuinely confident in it beforehand; if you're not confident, don't even offer - leave it
+  off. When included, mark it clearly as a suggestion; the person picking up the ticket decides.
 
 ## Picking the category (ALWAYS ask — never decide yourself)
 
@@ -135,7 +139,7 @@ _low | medium | high_
 
 ```
 #### Possible Solution
-_bugs/tasks only: a suggested approach, clearly marked a suggestion - the person working it decides. omit if none._
+_omit by default. Only include if I confirmed it (see the ASK-first rule) and you're confident: a suggested approach, clearly marked a suggestion - the person working it decides._
 
 #### Customer Impact
 _only if it adds something the user story's "so that" didn't already say. reusable for Release Notes._
