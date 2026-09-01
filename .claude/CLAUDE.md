@@ -11,6 +11,12 @@
 - Confirm before irreversible or outward-facing actions: force-push, deleting branches,
   rewriting git history, pushing to remotes, deleting cloud resources.
 - Show me the command before running anything I can't easily undo.
+- **Never publish an Artifact / host a page on claude.ai without my explicit approval.** Default
+  to writing a plain local file (HTML, Markdown, etc.) on my machine. Publishing an artifact
+  uploads the content to Anthropic's servers (it can be cached/indexed even if later deleted), so
+  it is an outward-facing action: ask first, every time, and only publish if I say so. When I
+  want something visual, still produce a local self-contained file unless I explicitly ask for a
+  hosted artifact.
 - Always target the environment EXPLICITLY - never rely on whatever "current"/default context
   happens to be selected, so we can't act on the wrong one by mistake. For `kubectl`, always
   pass an explicit `--context` (and `--namespace` where it matters); never depend on the
