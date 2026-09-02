@@ -20,6 +20,7 @@
 # the gh helper on Linux/WSL), so it is configured in ~/.gitconfig.local.
 [push]
   default = simple
+	autoSetupRemote = true
 [merge]
   tool = kdiff3
 [difftool]
