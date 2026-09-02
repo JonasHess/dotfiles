@@ -64,6 +64,9 @@ auth.yml
 .config/homebrew/
 .config/iterm2/
 .config/configstore/
+.config/cagent/
+.config/herdr/
+.config/wiremock-intellij/
 
 # Gemini CLI local context
 GEMINI.md
