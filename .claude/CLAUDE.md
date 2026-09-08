@@ -358,6 +358,13 @@ after writing, not later.
 ## Writing text deliverables (tickets, emails, message replies, summaries, drafts…)
 - When I ask you to write any prose deliverable, ALWAYS write it to a file - never just
   print the text in the chat.
+- **No hard line-wrapping in prose.** In text I will copy elsewhere (tickets, Redmine comments,
+  emails, chat messages, summaries), write each paragraph as ONE continuous line and separate
+  paragraphs with a blank line. Do NOT insert line breaks mid-paragraph just to wrap at some
+  width - those hard breaks look wrong when pasted into a program with a different width. Leave
+  visual line-wrapping to me and the target app; only paragraph breaks are yours. (Lists,
+  headings, and code blocks keep their normal line structure - this is about paragraph prose.)
+  This applies to the deliverable content only, not to config/code files like this one.
 - After you finish writing the file, open it for me in IntelliJ's standalone LightEdit
   mode: run `idea -e <path>` (the `-e` flag opens a single file without loading a project).
 - Use a descriptive filename and the right extension (`.md`, `.txt`, `.eml`/`.txt` for
@@ -435,3 +442,25 @@ after writing, not later.
   yourself - only I decide whether and how to change it (this is a Redmine write, which always
   needs my explicit approval). You may draft a proposed new description locally for me to
   review if I ask.
+
+## System docs & official specs (notes-local/doc, notes-local/spec)
+Beyond the per-ticket knowledgebases, maintain two repo-wide directories under `notes-local/`.
+Both are git-ignored working knowledge (never committed).
+
+- **`notes-local/doc/` - YOUR own system documentation.** Continuously read AND update it as you
+  learn how the system works - without being asked, same standing as the knowledgebase: NEVER
+  ask permission, just keep it current as a matter of course. Capture durable understanding of
+  the codebase/system: architecture, how components fit together, data flows, workflows,
+  gotchas, and how to do common things. Write it so a future conversation with no memory can get
+  up to speed. This is yours to author and maintain.
+- **`notes-local/spec/` - official documentation from OUTSIDE sources.** Store here any
+  authoritative material you did NOT write: format/message specs (EDIFACT, Tradacoms, EANCOM,
+  ISO 20022, X12…), standards, vendor/API docs, official PDFs. When you obtain such a document,
+  save it here. Do NOT edit their content - they are authoritative reference; only add and
+  organize files. (Ties into "Working from a specification": read the real spec from here.)
+- **Each directory MUST have a `README.md` that is an INDEX**, not prose: it says what
+  information lives in which file, grouped by topic and kept in a clear, easy-to-scan structure
+  so relevant information is quick to find. Update the index EVERY time you add, remove, or
+  meaningfully change a file in that directory - continuously, without being asked.
+- **Read these first.** When starting work, check `notes-local/doc/` (via its README index) and
+  `notes-local/spec/` for existing knowledge before rediscovering it or hunting elsewhere.
