@@ -435,6 +435,16 @@ after writing, not later.
   across releases for a matching `#<ticket>-*` folder / `knowledgebase.md` (the ticket may
   be filed under a release folder you don't expect, so search broadly, not just one path).
   If you find one, read it before doing anything else. If you don't, create a fresh one.
+- Also do a QUICK check of sibling repos for an existing knowledgebase, not just the current
+  repo. The same ticket may have been worked in another repo (e.g. the working dir is
+  `~/repos/pubx` but a knowledgebase exists at `~/repos/pubx2/notes-local/.../#<ticket>-*/` or
+  `~/repos/cloud-infrastructure/notes-local/.../#<ticket>-*/`). Only look ONE directory above
+  the current repo (the sibling repos next to it) - the repo name can be anything. Don't waste
+  effort searching wider; this is a cheap glance, not a deep hunt, and usually finds nothing.
+- If a knowledgebase for this ticket exists in a DIFFERENT repo, still create a new
+  knowledgebase in the CURRENT repo, but in it clearly point to the other file (full path) and
+  say the primary/earlier knowledgebase lives there - so both are linked and I know where the
+  fuller context is.
 - Watch for scope drift: if it becomes clear the ticket's actual scope has changed from what
   its Redmine description says (we're solving a different/bigger/smaller problem, the
   requirements shifted, etc.), actively raise it and ASK me whether I want to rewrite the
