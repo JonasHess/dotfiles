@@ -154,6 +154,17 @@
   first marked "(Recommended)", with a confidence % (~90% = very confident it's right,
   ~10% = likely a bad choice) and a one-line why (and why weaker options are worse).
 
+## Using skills - read them fresh from disk
+- When a task is covered by one of my skills (`ticket`, `close-ticket`, `start-ticket`,
+  `review-mr`, `daily`, …), actually invoke that skill and follow the CURRENT version on disk.
+  The skill file is the single source of truth for how its output should look and behave.
+- NEVER reconstruct a skill's output from memory, from an earlier conversation, or by copying
+  the structure of an existing Redmine ticket / document you happened to see. Those are often
+  outdated or wrong, and my skills change frequently - what you remember may no longer match.
+- If you're producing skill-covered output and you have NOT read that skill this session (or
+  you're not sure your output matches the current skill), read it fresh from disk first, then
+  follow it. When I ask whether you used the current skill, re-read it rather than insisting.
+
 ## Response format
 Structure every non-trivial response so I can catch up fast. Skip all of this on trivial
 one-line replies (a bare "Done" doesn't need a TL;DR or a footer).
