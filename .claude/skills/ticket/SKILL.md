@@ -47,9 +47,10 @@ allowed locally as the "no real ticket" marker in a `notes-local/` folder name
   (`h4.`, `@code@`, `*bold*` Textile-style render wrong in Redmine now).
 - **Language:** Always write the ticket in **English**, even if the user describes it in
   another language.
-- **Always include the title:** Every ticket draft MUST start with the recommended ticket
-  **title** (the Redmine *Subject*), clearly labelled so it's obvious it goes in the Subject
-  field, not the description body. Never write only the description — the title is required.
+- **Always include the title - as the raw first line:** Every ticket draft MUST start with the
+  recommended ticket title as the very first line, written as the plain title text ONLY. Do NOT
+  add a label or explanation like "Title:" or "Redmine Subject:" - just the raw string (with the
+  `[TT] ` prefix if technical). Never write only the description; the title line is required.
 - **Technical tickets — ALWAYS ask, never decide yourself:** Ask me whether this is a technical
   ticket (developer-facing, internal engineering work — infrastructure, refactor, API, data
   migration, etc.) or not. You may say which you'd guess, but you must ask and let me confirm.
@@ -79,7 +80,8 @@ allowed locally as the "no real ticket" marker in a `notes-local/` folder name
   automatically. Each time, ASK me whether to include one: briefly tell me the solution you'd
   suggest and why, and let me choose to add it or leave it off. Only propose one at all when you
   are genuinely confident in it beforehand; if you're not confident, don't even offer - leave it
-  off. When included, mark it clearly as a suggestion; the person picking up the ticket decides.
+  off. Do NOT add a disclaimer line like "*Suggestion only; whoever picks this up decides.*" -
+  the `Possible Solution` heading already signals it's a suggestion. Just state the suggestion.
 
 ## Picking the category (ALWAYS ask — never decide yourself)
 
@@ -120,7 +122,7 @@ concrete info not already stated). Keep every part short - bullets over paragrap
 ### Core (always)
 
 ```
-**Title (Redmine Subject):** <title - prefix with `[TT] ` if technical>
+<the raw ticket title on the first line - prefix with `[TT] ` if technical, no label>
 
 #### Description
 _one line. feature: `As a (role), I want to (action) so that (value).` bug/task: the problem in one sentence._
@@ -139,7 +141,7 @@ _low | medium | high_
 
 ```
 #### Possible Solution
-_omit by default. Only include if I confirmed it (see the ASK-first rule) and you're confident: a suggested approach, clearly marked a suggestion - the person working it decides._
+_omit by default. Only include if I confirmed it (see the ASK-first rule) and you're confident: state the suggested approach plainly. No "suggestion only" disclaimer line - the heading says enough._
 
 #### Customer Impact
 _only if it adds something the user story's "so that" didn't already say. reusable for Release Notes._
