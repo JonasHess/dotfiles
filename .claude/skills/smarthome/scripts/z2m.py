@@ -8,6 +8,8 @@ Read-only:
   motion                     list all devices exposing occupancy or presence
   status                     retained smarthome4/status of the app (state loaded or error)
   watch <device...> [secs]   print button presses (topic <device>/action), default 120 s
+  get <device> '<json>'      ask the device to report attributes, e.g. '{"operation_mode_left": ""}'
+                             (read-only, the answer shows up in Home Assistant a few seconds later)
 MUTATING (changes the real Zigbee network or devices):
   group-create <id> <name> <device...>   create a group and add the devices
   group-add <group> <device...>          add members (DUPLICATE_EXISTS: remove, then add again)
@@ -83,6 +85,8 @@ def main(a):
             request(c, got, "permit_join", {"time": int(rest[0])}, 2)
         elif cmd == "set":
             c.publish("zigbee2mqtt/%s/set" % rest[0], rest[1]); time.sleep(2)
+        elif cmd == "get":
+            c.publish("zigbee2mqtt/%s/get" % rest[0], rest[1]); time.sleep(2)
         else:
             print(__doc__)
         for t, p in got: print(t.replace("zigbee2mqtt/bridge/response/", ""), "->", p[:300])

@@ -22,7 +22,7 @@ All in `~/.claude/skills/smarthome/scripts/`. They read credentials at runtime f
 | `z2m.py group-create/group-add/group-remove/permit-join/set` | MUTATING Z2M helpers |
 | `pair_cycle.py` | pairs cheap bulbs by power-cycling an Aqara relay (see 6.3) |
 | `run-ui-backend.sh` | starts the smarthome4-ui backend locally on port 8000 against the real system |
-| `ui_api.py` | scenes, labels and assignments through that local backend |
+| `ui_api.py` | scenes, labels, assign and unassign through that local backend |
 | `validate_config.js` | checks `smarthome-config.yaml` (devices, types, profiles, references) before a commit |
 
 ## 1. Big picture
@@ -124,6 +124,8 @@ Edit `hess.pm/homeassistant-config/automations.yaml` or `configuration.yaml` (ne
 ## 8. Gotchas
 
 - zsh: `echo "====="` is parsed as a command, `set -- $var` does not word-split, `alias k` breaks function definitions, macOS `sed -i ''`. Use quoted heredocs (`<<'EOF'`) when text contains backticks, or the shell swallows them.
+- **The user also changes the house between turns** (renames lamps, rebuilds scenes). Re-read groups, scenes and labels right before applying a plan made from earlier reads. `ui_api.py unassign` reports success even for entities that do not exist, so always read back with `ui_api.py assignments <regex>`.
+- **Label order pattern:** every scene of a group has exactly one day label and one night label, numbered by cycle step without repeats (labels move with the scene entity id, not with the scene name). Pattern used: day starts with the brightest scene, night with the dimmest. Label ids for steps 1 to 4 already exist for most groups ("name already in use" on create is fine).
 - A freshly restarted HA shows entities as `unknown` until they report.
 - After a long run of `permit_join`, close it again (`z2m.py permit-join 0`).
 - `ha.sh` and the other scripts must never be pointed at a staging or cloud system.

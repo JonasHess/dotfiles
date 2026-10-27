@@ -8,6 +8,7 @@ Playwright browser, so scenes and labels are created through this local backend 
                                                    bri 0-254, mired 150-500 (250 cool white, 370 warm, 400 very warm)
   ui_api.py labels-create <name>...                MUTATING, creates Home Assistant labels
   ui_api.py assign <entity_id>=<label_id>...       MUTATING, assigns labels to scene entities
+  ui_api.py unassign <entity_id>=<label_id>...     MUTATING, removes labels from scene entities
   ui_api.py assignments [regex]                    scene entities with their labels (read-only)
 A label id is the label name in lowercase with every run of other characters turned into _
 (Badezimmer Oben__DimmerSwitch__01__day__1 -> badezimmer_oben_dimmerswitch_01_day_1).
@@ -36,6 +37,8 @@ elif cmd == "labels-create":
     print(call("/api/labels/create", {"names": rest}))
 elif cmd == "assign":
     print(call("/api/assignments/apply", {"add": [{"entity_id": x.split("=")[0], "label_id": x.split("=")[1]} for x in rest], "remove": []}))
+elif cmd == "unassign":
+    print(call("/api/assignments/apply", {"add": [], "remove": [{"entity_id": x.split("=")[0], "label_id": x.split("=")[1]} for x in rest]}))
 elif cmd == "assignments":
     d = call("/api/assignments/state")["data"]; names = {l["label_id"]: l["name"] for l in d["labels"]}
     rx = re.compile(rest[0], re.I) if rest else None
