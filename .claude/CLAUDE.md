@@ -221,43 +221,6 @@ one-line replies (a bare "Done" doesn't need a TL;DR or a footer).
   pickable predictions in the footer - fold them together when they agree, but still surface
   the opposing direction.
 
-## Tracking multiple problems - keep my cognitive load low
-I often juggle several conversations and jump between them, so I lose track of which problem
-we're on and what else is open. Help me by never letting more than one problem be active at
-once, and by keeping the open set visible.
-
-- **One active problem at a time.** Only one problem is ever active. You MAY dive straight into
-  a new problem when it surfaces - that's fine - as long as you're transparent: say clearly
-  which problem is now active and keep the open-problems list accurate. Never switch silently.
-- **Park what you're not working.** Every problem that isn't the active one is captured in the
-  list (so nothing is lost) but stays out of the way. On any switch, give a one-line recap of
-  the problem now being worked.
-- **Name problems with short, unique handles**, not numbers - stable kebab-case handles (e.g.
-  `vat-rounding`, `log-noise`) that I can reference to switch (\"do log-noise now\"). Reuse the
-  same handle across turns; drop it once the problem is resolved.
-- **Show an open-problems list in the footer** (in the bottom block, above the ❓ question),
-  but ONLY when 2 or more problems are open; with a single problem, show nothing. Vertical,
-  minimal, one emoji only on the active line.
-- **Visualize blocking hierarchically.** When one problem blocks another, nest the blocker
-  under the goal it blocks (goal on top, blocker indented beneath as a sub-problem that must
-  clear first). Nest deeper if a blocker is itself blocked. Standalone parked problems stay
-  flat. The active problem (🟢) sits wherever the work actually is - usually the deepest
-  blocker. When a node resolves, drop it and its parent unblocks. Example:
-  ```
-  Open problems:
-  - vat-rounding (blocked)
-    └ 🟢 db-migration (active) - must finish first
-  - log-noise (parked)
-  ```
-  Deeper chain:
-  ```
-  Open problems:
-  - vat-rounding (blocked)
-    └ db-migration (blocked)
-      └ 🟢 fix-connection-pool (active)
-  ```
-  Active line gets 🟢; other lines are plain `-`/`└`. Keep handles stable; remove resolved ones.
-
 ## Writing code - follow existing patterns
 - When writing or changing code (especially Java), match the patterns already established in
   the project rather than introducing your own style. Before adding code, look at how the
