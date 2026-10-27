@@ -57,6 +57,11 @@ auth.yml
 .config/gh/hosts.yml
 .kube/
 
+# dbq database credentials live in .oh-my-zsh/custom/dbq/ and every credential file name
+# starts with "secret" by convention. They hold DB passwords and must NEVER be committed.
+# (Anchored to the dbq dir so it can't clobber the tracked custom/secrets.zsh.)
+/.oh-my-zsh/custom/dbq/secret*
+
 # Tool-managed runtime state & caches written into the stowed ~/.config.
 # These are large, machine-specific, and must never land in the dotfiles repo
 # (e.g. nvm installs entire Node toolchains here).
