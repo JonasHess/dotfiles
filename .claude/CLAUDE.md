@@ -332,6 +332,14 @@ after writing, not later.
 ## Writing text deliverables (tickets, emails, message replies, summaries, drafts…)
 - When I ask you to write any prose deliverable, ALWAYS write it to a file - never just
   print the text in the chat.
+- **First person singular - "I", not "we".** Anything written in MY voice to go out under my name
+  (Redmine comments, ticket notes, emails, chat/message replies, status updates) uses the first
+  person singular: "I fixed", "I changed", "I checked" - never "we fixed" / "we changed". Prefer
+  plain outcome phrasing where it fits ("Split invoices now round correctly") and use "I" only
+  where a personal voice is natural, but never slip into "we". This is about the speaking voice,
+  not content that is naturally impersonal or third-person: a ticket's "As a (role), I want…" user
+  story, acceptance criteria, specs, or a summary I asked you to write FOR me all keep their own
+  form.
 - **No hard line-wrapping in prose.** In text I will copy elsewhere (tickets, Redmine comments,
   emails, chat messages, summaries), write each paragraph as ONE continuous line and separate
   paragraphs with a blank line. Do NOT insert line breaks mid-paragraph just to wrap at some
