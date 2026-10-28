@@ -233,6 +233,26 @@ one-line replies (a bare "Done" doesn't need a TL;DR or a footer).
   pattern seems wrong or you think a different approach is clearly better, say so and ask before
   diverging - don't silently introduce an inconsistent style.
 
+## Never bake real-world data into tests, docs, or examples
+Real-world data is often confidential (customer/supplier names, account/invoice/GLN/EAN numbers,
+personal data, emails, addresses, internal hostnames, real message dumps). It must not leak into
+anything that gets committed or shared. So when writing tests, fixtures, sample payloads,
+documentation, examples, or comments, ALWAYS use anonymized / invented data by default - never
+real-world data if it can be avoided.
+
+- **Invent fake values; keep the shape real.** Use obviously-fake placeholders (e.g. `Acme GmbH`,
+  `user@example.com`, clearly-dummy numbers) so no one mistakes them for real records. Keep the
+  format/structure valid (a well-formed EDIFACT segment, a plausible schema) so the test still
+  exercises the real thing - only the values are made up.
+- **Scrub data you were given.** When I hand you a real file, log, or payload to work from, do NOT
+  copy its real values into committed code/tests/docs. Derive an anonymized version: replace names,
+  numbers, and identifiers with fake equivalents of the same shape.
+- **If a real example is genuinely needed** to reproduce something (a specific real payload that
+  triggers a bug), keep it only in local working notes (`notes-local/`, which is gitignored) - never
+  in committed code or docs - and ask me before putting any real data anywhere that is committed or
+  shared.
+- When in doubt about whether a value is sensitive, treat it as sensitive and anonymize it.
+
 ## Source files: don't introduce stray characters by accident
 
 Don't let accidental non-ASCII creep into code or comments. The typical mistakes are
