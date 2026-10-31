@@ -36,9 +36,14 @@ fi
 # Skipped when:
 #   - already inside a Herdr pane ($HERDR_SOCKET_PATH is set in panes)
 #   - opted out via HERDR_AUTOSTART=false (e.g. `HERDR_AUTOSTART=false zsh`)
+#   - opted out via LC_HERDR_AUTOSTART=false, meant to be sent by a client that
+#     already runs Herdr (`SetEnv LC_HERDR_AUTOSTART=false` in its ~/.ssh/config),
+#     so an SSH session from inside Herdr does not nest a second Herdr. The LC_
+#     prefix is required because stock sshd only accepts LANG and LC_* (AcceptEnv).
 if [[ -o interactive ]] \
    && [[ -z "$HERDR_SOCKET_PATH" ]] \
    && [[ "$HERDR_AUTOSTART" != "false" ]] \
+   && [[ "$LC_HERDR_AUTOSTART" != "false" ]] \
    && command -v herdr >/dev/null 2>&1; then
   () {
     local root name list wid
