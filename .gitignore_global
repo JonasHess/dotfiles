@@ -98,6 +98,8 @@ xcuserdata/
 *.pem
 *.key
 secrets.zsh
+# Akeyless CLI home: profiles/*.toml hold the access key in plain text
+.akeyless/
 
 # === direnv / asdf / tooling ==========================================
 .direnv/

@@ -2,6 +2,8 @@
 .idea
 /.config/github-copilot/
 secrets.zsh
+# Akeyless CLI home: profiles/*.toml hold the access key in plain text
+.akeyless/
 
 # Claude Code/Anthropic files
 CLAUDE.local.md
