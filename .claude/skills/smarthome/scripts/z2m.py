@@ -14,7 +14,9 @@ MUTATING (changes the real Zigbee network or devices):
   group-create <id> <name> <device...>   create a group and add the devices
   group-add <group> <device...>          add members (DUPLICATE_EXISTS: remove, then add again)
   group-remove <group> <device...>       remove members
-  permit-join <seconds>                  open (or with 0 close) the pairing window, max 254
+  permit-join <seconds> [device]         open (or with 0 close) the pairing window, max 254;
+                                         with [device] only that router/coordinator accepts joins
+  rename <old> <new>                     rename a device; the Home Assistant entity ids follow the new name
   set <device> '<json>'                  publish to <device>/set, e.g. '{"state_left": "ON"}'
 """
 import json, os, re, sys, time
@@ -82,7 +84,11 @@ def main(a):
         elif cmd in ("group-add", "group-remove"):
             for d in rest[1:]: request(c, got, "group/members/" + cmd.split("-")[1], {"group": rest[0], "device": d})
         elif cmd == "permit-join":
-            request(c, got, "permit_join", {"time": int(rest[0])}, 2)
+            payload = {"time": int(rest[0])}
+            if len(rest) > 1: payload["device"] = rest[1]
+            request(c, got, "permit_join", payload, 2)
+        elif cmd == "rename":
+            request(c, got, "device/rename", {"from": rest[0], "to": rest[1], "homeassistant_rename": True}, 5)
         elif cmd == "set":
             c.publish("zigbee2mqtt/%s/set" % rest[0], rest[1]); time.sleep(2)
         elif cmd == "get":
