@@ -134,6 +134,20 @@
   memory keyed by app name) once you've confirmed them, and check that memory first before
   hunting for logs again.
 
+## Playwright MCP: browser already in use
+- Playwright MCP keeps one persistent Chrome profile per workspace
+  (`~/Library/Caches/ms-playwright/mcp-<channel>-<workspace-hash>`), and only one browser can
+  use it at a time. So Claude sessions in the same repo collide. If a Playwright call fails
+  because the browser/profile is "already in use", it is usually a stale browser left over
+  from another (idle or dead) session. Don't give up or ask me: free it yourself and retry once.
+- Take the exact profile path from the error message and kill only the Chrome processes using
+  THAT dir - never my normal Chrome, never other workspaces' Playwright browsers, and never the
+  other session's `playwright-mcp` server (it relaunches its browser on next use):
+  `pkill -f -- '--user-data-dir=<exact-profile-path>'`. If no such process is left but the
+  error persists, remove the leftover `SingletonLock` in that profile dir.
+- Tell me in one line that you killed a stale Playwright browser. If it still fails after
+  that, stop and report instead of looping.
+
 ## How I like you to work
 - Be concise. Lead with the answer, then detail.
 - When you mention a file, always give its full absolute path (e.g.
