@@ -120,8 +120,10 @@ The total was rounded on each line separately instead of once on the whole invoi
 - Invoice totals now round once, so split invoices match the expected amount.
 - Added an automated test covering split-invoice rounding.
 
-#### How To Verify
-- Create an invoice that splits across several lines and check the total is correct to the cent.
+#### How To Test
+1. Open an order with several items and create an invoice that is split into two parts.
+2. Open both invoices and add up their totals.
+3. The sum should match the order total exactly, to the cent.
 
 #### Follow-Ups
 - None
@@ -134,7 +136,11 @@ Section guide (all terse):
   features/tasks.
 - **What Changed** - bullets describing the change by its effect (what behaves differently now),
   NOT by commit/file. No commit hashes/branches unless truly needed.
-- **How To Verify** - steps a tester can actually follow to confirm it. Recommended.
+- **How To Test** - numbered, step-by-step instructions a non-developer (tester / PM) can follow
+  in the application to check the change, ending with the expected result. Use the UI and
+  functional terms they know (screens, buttons, menus, sample data); no code, SQL, logs, commands,
+  or internal class names. Name the heading exactly `How To Test` (never "How To Verify").
+  Recommended.
 - **Follow-Ups** - bullets of what's left out on purpose / known limits, or `- None`.
 
 ## Output
