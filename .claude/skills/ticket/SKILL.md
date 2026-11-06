@@ -37,9 +37,10 @@ allowed locally as the "no real ticket" marker in a `notes-local/` folder name
   already carries the role and the value, don't restate them in *Actors* or *Customer Impact*.
   Repetition is what reads as slop.
 - **Omit redundant or empty sections:** Include a section only when it adds concrete new info.
-  A thin or restating section is worse than no section - drop it. Only *Description*, *AS-IS*
-  (bugs), *TO-BE / Acceptance Criteria*, and *Priority* are always present; the rest are
-  optional (see the template).
+  A thin or restating section is worse than no section - drop it. Which sections are core and
+  which are optional depends on the template (see *Templates*).
+- **Priority always needs a reason.** Never write the priority as a bare word: always add at
+  least one sentence explaining why it has that priority. If you don't know why, ask me.
 - **Normal professional English:** Write the ticket content in plain, clear English (NOT the
   caveman chat style) - teammates read it. Terse and lean, but full words and readable.
 - **Format:** Markdown only (Redmine is configured for Markdown). Use `####`/`#####` headings,
@@ -55,7 +56,8 @@ allowed locally as the "no real ticket" marker in a `notes-local/` folder name
   ticket (developer-facing, internal engineering work — infrastructure, refactor, API, data
   migration, etc.) or not. You may say which you'd guess, but you must ask and let me confirm.
   If I say technical, prefix the **title** with `[TT] `; non-technical / business tickets get no
-  prefix.
+  prefix. A technical ticket usually goes in the *Change* tracker with the `Technical_Ticket`
+  or `Technical_Debt_Cleanup` template (see *Templates*).
 - **Fill, don't leave placeholders:** Replace every `_italic placeholder_` with real content
   based on what the user told you. If you genuinely lack the information for a section, ask the
   user (one question at a time) rather than inventing facts. Drop sections only when the
@@ -85,18 +87,21 @@ allowed locally as the "no real ticket" marker in a `notes-local/` folder name
 
 ## Picking the category (ALWAYS ask — never decide yourself)
 
-ALWAYS ask the user which category the ticket is before writing it — **Bug**, **Feature**,
-**Task**, or another type they name. Do NOT decide the category yourself, even if it seems
-obvious from their description. You may state which one you'd guess, but you must still ask and
-let the user confirm or correct it before proceeding.
+ALWAYS ask the user which category (Redmine tracker + template) the ticket is before writing
+it. Do NOT decide it yourself, even if it seems obvious from their description. You may state
+which one you'd guess, but you must still ask and let the user confirm or correct it before
+proceeding. The category picks the template in *Templates*:
 
-- **Feature** — new capability or enhancement.
-- **Bug** — something is broken / behaves wrong. Push for more reproduction detail in
-  AS-IS-STATE (concrete examples, links, mailboxes, steps).
-- **Task** — a unit of work that is neither a new feature nor a defect (chore, setup, follow-up).
-
-All three share the same section structure below. The only practical difference is emphasis:
-bugs need strong reproduction detail in AS-IS-STATE.
+- **Feature** (`Default_Feature`) - new capability or enhancement.
+- **Bug** (`Default_Bug`) - something is broken / behaves wrong. Push for strong reproduction
+  detail in AS-IS-STATE (concrete examples, links, mailboxes, steps).
+- **Task** (`Default_Task`) - work that is neither a new feature nor a defect (chore, setup,
+  follow-up).
+- **Epic** (`Default_Epic`) - a large feature spanning several tickets.
+- **Change** - pick one of its three templates:
+  - `Behaviour_Change` - changing how existing functionality behaves.
+  - `Technical_Ticket` - developer-facing engineering work (`[TT]`).
+  - `Technical_Debt_Cleanup` - cleaning up technical debt a developer found (`[TT]`).
 
 ## User story
 
@@ -110,48 +115,134 @@ Example — *As a registered user, I want to reset my password via an email link
 regain access to my account if I forget my password.*
 
 Remember the workflow rule above: propose this sentence first as your best guess and get my
-agreement on it BEFORE writing the full ticket. For a bug or task where a user-story sentence
-doesn't fit naturally, say so and offer to phrase the core problem / acceptance criteria
-instead — still confirm the framing with me first.
+agreement on it BEFORE writing the full ticket. Only the templates with a *User Story /
+Description* section (Feature, Epic, Behaviour_Change) carry this sentence. For the others
+(Bug, Task, Technical_Ticket, Technical_Debt_Cleanup), propose the one-sentence core problem
+that opens AS-IS-STATE instead, and still confirm the framing with me first.
 
-## Template
+## Templates
 
-Two parts: the **core** (always present) and **optional** sections (include only when they add
-concrete info not already stated). Keep every part short - bullets over paragraphs.
+These mirror the official issue templates of the Redmine **pubx** project (other projects
+define none). Use the headings exactly as written, in this order, with a `---` line between
+sections. Replace the `_italic_` guidance with real content. Optional sections (marked) go in
+only when they add new info; drop the heading otherwise.
 
-### Core (always)
+To re-sync when the Redmine templates change (read-only GET; tracker ids: Feature 2, Bug 1,
+Task 6, Epic 4, Change 10):
+
+```bash
+curl -s -H "X-Redmine-API-Key: $REDMINE_API_KEY" -H "X-Requested-With: XMLHttpRequest" \
+  "https://pm.dev.booklan.de/projects/pubx/issue_templates/list_templates?issue_tracker_id=<id>"
+```
+
+The response is HTML with each template rendered in a `template_tooltip_body` div.
+
+### Feature, Epic, Behaviour_Change
 
 ```
 <the raw ticket title on the first line - prefix with `[TT] ` if technical, no label>
 
-#### Description
-_one line. feature: `As a (role), I want to (action) so that (value).` bug/task: the problem in one sentence._
+#### User Story / Description
+_one sentence: As a (role), I want to (action) so that (value)._
 
-#### AS-IS
-_bugs: concrete repro detail (examples, links, mailboxes, steps). omit for a pure feature with no current behaviour._
+---
 
-#### TO-BE / Acceptance Criteria
-_the expected result AND the conditions to consider it done, as short bullets. state the result, not a prescribed implementation. if an official spec applies (e.g. Tradacoms), quote the exact section + link once._
+#### AS-IS-STATE
+_the current situation: examples, links, mailboxes if available. Drop only for a brand-new feature with no current behaviour._
+
+---
+
+#### TO-BE-STATE
+_what is expected, as a result, not a prescribed implementation. If an official spec applies (e.g. Tradacoms), quote the exact section and link it once._
+
+##### Acceptance Criteria
+_short bullets: the conditions for the ticket to count as complete and accepted._
+
+---
 
 #### Priority
-_low | medium | high_
-```
+_Low, Medium or High, followed by one or two sentences explaining why: urgency, who is blocked or affected, deadlines, workarounds. Never just the bare word._
 
-### Optional (add ONLY if it adds new info, else omit the heading entirely)
-
-```
-#### Possible Solution
-_omit by default. Only include if I confirmed it (see the ASK-first rule) and you're confident: state the suggested approach plainly. No "suggestion only" disclaimer line - the heading says enough._
+---
 
 #### Customer Impact
-_only if it adds something the user story's "so that" didn't already say. reusable for Release Notes._
+_optional. Short summary of the customer impact, reusable for Release Notes._
+
+---
 
 #### Actors
-_only if non-obvious from the user story: internal/external; retailer- or supplier-based; specific customer name if one._
+_optional. internal or external; if external, retailer- or supplier-based, and the customer name if it's a specific customer._
+
+---
 
 #### Testing Scenarios
-_only if you have specific testing instructions worth stating._
+_optional. Only if there are specific testing instructions._
 ```
+
+### Bug
+
+Same as above but **without** *User Story / Description*: the ticket starts with AS-IS-STATE,
+which must carry the reproduction detail (the more specific, the easier to reproduce).
+
+### Task
+
+Like Bug (no *User Story / Description*), but TO-BE-STATE has **no** *Acceptance Criteria*
+subsection and there is **no** *Testing Scenarios* section. Sections: AS-IS-STATE,
+TO-BE-STATE, Priority, then optional Customer Impact and Actors.
+
+### Technical_Ticket (Change, `[TT]`)
+
+```
+[TT] <title>
+
+#### AS-IS-STATE
+_the current situation._
+
+---
+
+#### TO-BE-STATE
+_short summary of what is expected with the upcoming changes._
+
+---
+
+#### Testing Information
+_which parts of the system are affected and need testing. Extra testing effort is agreed with the assigned PM(s)._
+
+---
+
+#### System Impact
+_none, or a short summary of the noticeable system impact._
+
+---
+
+#### Priority
+_which release this ticket is required/planned for, plus one or two sentences on why it is needed by then (what depends on it, what happens if it slips)._
+```
+
+### Technical_Debt_Cleanup (Change, `[TT]`)
+
+```
+[TT] <title>
+
+#### AS-IS-STATE
+_As a developer I recognized debt at ... (where, and why it hurts)._
+
+---
+
+#### Testing Information
+_which parts of the system are affected and need testing. Extra testing effort is agreed with the assigned PM(s)._
+
+---
+
+#### Priority
+Low - _plus one sentence on why it can wait, or why it should be raised (e.g. it blocks upcoming work)._
+```
+
+### Not in the Redmine templates
+
+- **Possible Solution** - only if I confirmed it (see the ASK-first rule). Place it right after
+  TO-BE-STATE as `#### Possible Solution`. No "suggestion only" disclaimer.
+- A related-ticket note, if any, goes as one short line at the end of the section it belongs to.
 
 ## Output
 
