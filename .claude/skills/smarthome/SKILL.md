@@ -162,6 +162,7 @@ Edit `<domain>/homeassistant-config/automations.yaml` or `configuration.yaml` (a
 - **Label order pattern:** every scene of a group has exactly one day label and one night label, numbered by cycle step without repeats (labels move with the scene entity id, not with the scene name). Pattern: day starts with the brightest scene, night with the dimmest. Label ids for steps 1 to 4 often already exist ("name already in use" on create is fine).
 - A freshly restarted HA shows entities as `unknown` until they report.
 - After a long run of `permit_join`, close it again (`z2m.py permit-join 0`).
+- **A lamp in two Z2M groups follows both rooms.** If a lamp is a member of another room's group too, that room's motion off-delay and scenes switch it, and the lamp's own room cannot prevent it (presence and manual locks are per resource ID). Symptom: lights going off "by themselves" exactly `offDelaySeconds` after motion stopped in the OTHER room, with HA's logbook showing smarthome4's `turn_off` on the other group in the same second. Check group membership (retained `zigbee2mqtt/bridge/groups`) when a room misbehaves; keep each lamp in exactly one room group.
 - `ha.sh` and the other scripts must only point at the environment you are working in - never at a staging or cloud system, and never at another person's environment.
 - Write notes and deliverables as files under `notes-local/` of the relevant repo (gitignored) and open them with `idea -e <path>`.
 - Do not leave scratch files in repos; use the session scratchpad.
