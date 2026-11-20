@@ -62,12 +62,24 @@ Only after I confirm do you move on to writing the closing comment below.
   `---` horizontal rules, `**bold**`, `*italics*`, `` `inline code` ``, `-` bullets, and fenced
   `` ``` `` code blocks. Never Textile (`h4.`, `@code@`, `<pre>` render wrong in Redmine now).
 - **Language:** Always write in **English**, even if the user describes it in another language.
-- **Short and to the point - no AI slop:** The whole comment should fit on one screen. Prefer
-  short bullets and fragments over sentences; one line per point. Keep each section to roughly
-  1-3 lines. Explain the "why" in as few words as it takes. Cut all filler ("in order to", "it
-  is worth noting", "this ensures that", "as mentioned"), do not restate the ticket, no praise,
-  no meta-commentary. Someone who didn't do the work should still understand it - clarity through
-  brevity, not volume.
+- **To the point - no AI slop:** As long as the ticket needs, not longer. A small bug fix fits
+  on one screen; a feature with several decisions gets a Summary of a few short paragraphs and
+  scenario-based tests. Plain, short sentences; one point per bullet. Cut all filler ("in order
+  to", "it is worth noting", "this ensures that", "as mentioned"), no praise, no
+  meta-commentary. Someone who didn't do the work should still understand it.
+- **Explain the important decisions, in the Summary:** Whenever the implementation made a
+  choice the reader could not guess from the ticket (a scope limit, an option chosen over
+  another, a deviation from the description, a screen that is also affected), work it into the
+  Summary prose together with its reason in one short clause ("..., because ..."). Do NOT list
+  decisions as a separate bullet section. Leave out obvious decisions - things the ticket
+  literally asked for, defaults that change nothing, or one of two options the ticket already
+  allowed - they only add noise. Typically 2-4 decisions are worth telling.
+- **Say where the plan changed:** If a refinement or later ticket comment replaced part of the
+  description, say so plainly in the Summary ("The description first asked for X. As agreed in
+  the refinement, Y instead, because ..."), so a tester reading only the description does not
+  look for the old behaviour.
+- **One line per paragraph:** Write every prose paragraph as ONE line (no hard wraps), with a
+  blank line between paragraphs - it is pasted into Redmine.
 - **Write for a tester / PM, not a developer:** The audience is testers and product managers, so
   describe the outcome in plain, functional terms - what now works, what behaviour changed, what
   they can check. Avoid developer jargon and internals. For a `[TT]` (technical) ticket you may be
@@ -106,11 +118,11 @@ Only after I confirm do you move on to writing the closing comment below.
 
 ## Template
 
-Keep it lean. One line per point. Drop any section that doesn't apply (don't leave an empty
-heading). Example of the target length:
+Drop any section that doesn't apply (don't leave an empty heading). A small bug fix stays this
+short:
 
 ```
-#### Solution
+#### Summary
 Split invoices now round to the correct cent amount.
 
 #### Root Cause
@@ -118,30 +130,75 @@ The total was rounded on each line separately instead of once on the whole invoi
 
 #### What Changed
 - Invoice totals now round once, so split invoices match the expected amount.
-- Added an automated test covering split-invoice rounding.
 
 #### How To Test
 1. Open an order with several items and create an invoice that is split into two parts.
 2. Open both invoices and add up their totals.
-3. The sum should match the order total exactly, to the cent.
+3. Expected: the sum matches the order total exactly, to the cent.
 
 #### Follow-Ups
 - None
 ```
 
-Section guide (all terse):
+A feature with real decisions gets a Summary in a few short paragraphs (each ONE line) and
+scenario-based tests:
 
-- **Solution** - one line: what now works, in plain outcome terms.
+```
+#### Summary
+<Problem in the users' words, then what can be done now and where.> <One sentence on defaults if it matters, e.g. "every supplier starts with everything switched on, so nothing changes until support edits a supplier".>
+
+<Important decision 1 with its reason ("..., because ..."). Important decision 2 with its reason.>
+
+<Where the plan changed: "The description first asked for X. As agreed in the refinement, Y instead, because Z.">
+
+<Other screens that follow the same rules, and why.>
+
+#### What Changed
+- <Where the new settings / screens are, named as the user sees them.>
+- <What behaves differently, grouped by screen.>
+
+#### How To Test
+**Preparation**
+- <Test data needed: which kind of supplier / retailer / order, in functional terms.>
+- Tip: <anything that saves the tester time, e.g. "save, then reload the cart">.
+
+**Scenario 1 - <Nothing changed (default)>**
+1. <Step>
+2. Expected: <result>
+
+**Scenario 2 - <short name>**
+1. <Step>
+2. Expected: <result>
+
+#### Follow-Ups
+- <Open question / left-out work, with ticket numbers of existing follow-up tickets.>
+```
+
+Section guide:
+
+- **Summary** - what now works, in plain outcome terms. For anything beyond a one-line fix: a few
+  short prose paragraphs telling the story - problem, solution, the important decisions with
+  their reasons, where the plan changed. No separate decision list (see the rules above).
 - **Root Cause** - bugs only, one line: the underlying cause in plain language. Omit for
   features/tasks.
 - **What Changed** - bullets describing the change by its effect (what behaves differently now),
-  NOT by commit/file. No commit hashes/branches unless truly needed.
-- **How To Test** - numbered, step-by-step instructions a non-developer (tester / PM) can follow
-  in the application to check the change, ending with the expected result. Use the UI and
-  functional terms they know (screens, buttons, menus, sample data); no code, SQL, logs, commands,
-  or internal class names. Name the heading exactly `How To Test` (never "How To Verify").
-  Recommended.
-- **Follow-Ups** - bullets of what's left out on purpose / known limits, or `- None`.
+  grouped by screen, NOT by commit/file. No commit hashes/branches unless truly needed.
+- **How To Test** - instructions a non-developer (tester / PM) can follow in the application.
+  For a small change: a numbered list ending with the expected result. For a feature: a short
+  **Preparation** list (which test data is needed, in functional terms) and numbered
+  **Scenario N - <name>** blocks, each with a few steps and an `Expected:` line. Start with the
+  "nothing changed" default case, cover each setting / rule once, include a "other cases stay
+  unchanged" comparison, and end with "back to default" when settings were changed. Use the UI
+  and functional terms they know (screens, buttons, menus, sample data); no code, SQL, logs,
+  commands, or internal class names. Name the heading exactly `How To Test` (never "How To
+  Verify"). Recommended.
+- **Follow-Ups** - bullets of what's left out on purpose / known limits / open questions, or
+  `- None`.
+
+**Tell the user what you could not verify:** after writing the draft, say in chat (not in the
+comment) which test steps or scenarios you did not check yourself in the running application
+(e.g. covered only by automated tests, or blocked by local test data), so the user can decide
+whether to keep them.
 
 ## Output
 
