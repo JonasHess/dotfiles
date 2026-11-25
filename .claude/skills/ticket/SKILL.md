@@ -107,7 +107,7 @@ proceeding. The category picks the template in *Templates*:
 
 Write the User Story / Description as a single sentence in this structure:
 
-> **As a** _(the user role)_ — who needs this (e.g. customer, admin, guest).
+> **As a** _(the user role)_ — who needs this (e.g. retailer, supplier, admin). Never "customer".
 > **I want to** _(the action)_ — the specific capability or behaviour they want.
 > **So that** _(the value)_ — the underlying goal, reason, or business value.
 
@@ -166,12 +166,12 @@ _Low, Medium or High, followed by one or two sentences explaining why: urgency, 
 ---
 
 #### Customer Impact
-_optional. Short summary of the customer impact, reusable for Release Notes._
+_optional. Short summary of the impact on retailers/suppliers (never say "customer" - the heading is the fixed Redmine name), reusable for Release Notes._
 
 ---
 
 #### Actors
-_optional. internal or external; if external, retailer- or supplier-based, and the customer name if it's a specific customer._
+_optional. internal or external; if external, retailer- or supplier-based, and its name if it's one specific retailer or supplier._
 
 ---
 

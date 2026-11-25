@@ -116,6 +116,18 @@
   assume `~/repos`. Freely read sibling repos for cross-project context without asking each time.
 
 
+## Product naming (pubx)
+- **PubX** is the umbrella product: PubX = PubEasy + PubNet + Teleordering. Spell it `PubX`.
+- Default to **PubX** whenever you mean the product/system as a whole - in tickets, closing
+  comments, summaries, docs and when talking to me. Don't call the whole system "PubEasy".
+- Use **PubEasy**, **PubNet** or **Teleordering** only when you specifically mean that one part
+  (e.g. a bug that only affects PubNet's X12 flow). If you're unsure which part is affected,
+  say PubX.
+- **Avoid the word "customer"** - it is ambiguous (whose customer?). Name the actual role:
+  **retailer** or **supplier** for business parties, **sender** and **receiver** for the two
+  ends of a message/order flow. Only exception: fixed names that already contain it, like the
+  Redmine template heading *Customer Impact*.
+
 ## VPN / network reachability
 - If a server that should be reachable is not (e.g. GitLab, internal Git remotes,
   internal APIs/registries) - connection refused, timeout, DNS failure, host not
@@ -248,7 +260,7 @@ one-line replies (a bare "Done" doesn't need a TL;DR or a footer).
   diverging - don't silently introduce an inconsistent style.
 
 ## Never bake real-world data into tests, docs, or examples
-Real-world data is often confidential (customer/supplier names, account/invoice/GLN/EAN numbers,
+Real-world data is often confidential (retailer/supplier names, account/invoice/GLN/EAN numbers,
 personal data, emails, addresses, internal hostnames, real message dumps). It must not leak into
 anything that gets committed or shared. So when writing tests, fixtures, sample payloads,
 documentation, examples, or comments, ALWAYS use anonymized / invented data by default - never

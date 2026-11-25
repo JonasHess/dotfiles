@@ -69,7 +69,7 @@ Be thorough and specific. Cover at least:
 - **Fit with the codebase** - follows existing patterns (logging, naming, structure, error
   handling, existing helpers) rather than a new inconsistent style.
 - **Tests** - are the changes covered, do the tests actually assert the behaviour.
-- **Security / data** - injection, secrets in code, leaking real customer/supplier data.
+- **Security / data** - injection, secrets in code, leaking real retailer/supplier data.
 - **Readability / maintainability** - clarity, dead code, comments that earn their place.
 
 For each finding: where it is (`file:line`), what's wrong, why it matters, and a concrete
